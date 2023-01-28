@@ -1,0 +1,248 @@
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+model User {
+  id          String         @id @default(cuid())
+  email       String         @unique() @db.Citext
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime?      @updatedAt @map("updated_at")
+  lastLogin   DateTime?
+  password    String
+  elections   Election[]
+  lists       List[]
+  runs        ElectionRun[]
+  listChanges ListRevision[]
+
+  @@map("users")
+}
+
+enum Gender {
+  man
+  woman
+  divers
+}
+
+enum ElectionStatus {
+  sandbox
+  scheduled
+  live
+  complete
+}
+
+model Election {
+  id                    String          @id @unique @map("id")
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+  lists                 List[]
+  owner                 User            @relation(fields: [ownerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  ownerId               String          @map("user_id")
+  numEligibleEmployees  Int
+  percentMinorityGender Float
+  minorityGender        Gender
+  date                  DateTime?
+  runs                  ElectionRun[]
+  electionStatus        ElectionStatus? @default(value: sandbox)
+  listRev               ListRevision?   @relation(fields: [listRevId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  listRevId             String?
+
+  @@index([ownerId], type: Hash)
+  @@index([listRevId], type: Hash)
+}
+
+enum RunType {
+  sandbox
+  proposed
+  live
+}
+
+model ElectionRun {
+  id                    String           @id @default(cuid())
+  createdAt             DateTime         @default(now()) @map("created_at")
+  updatedAt             DateTime         @updatedAt @map("updated_at")
+  owner                 User             @relation(fields: [ownerId], references: [id])
+  ownerId               String           @map("user_id")
+  runType               RunType?         @default(value: sandbox)
+  election              Election         @relation(fields: [electionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  electionId            String
+  results               ElectionResult[]
+  numEligibleEmployees  Int
+  percentMinorityGender Float
+  minorityGender        Gender
+
+  @@index([electionId], type: Hash)
+  @@index([ownerId], type: Hash)
+}
+
+model ElectionResult {
+  id        String       @id @default(cuid())
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  listRev   ListRevision @relation(fields: [listRevId], references: [id])
+  listRevId String
+  position  Int
+  numVotes  Int
+  numSeats  Int
+  run       ElectionRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  runId     String
+
+  @@index([runId], type: Hash)
+  @@index([listRevId], type: Hash)
+}
+
+enum ListStatus {
+  sandbox
+  proposed
+  live
+}
+
+model List {
+  id           String         @id @default(cuid())
+  name         String
+  owner        User           @relation(fields: [ownerId], references: [id])
+  ownerId      String         @map("user_id")
+  status       ListStatus     @default(value: sandbox)
+  elections    Election[]
+  revisions    ListRevision[] @relation(name: "list")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  copiedFrom   List?          @relation(fields: [copiedFromId], references: [id], name: "copies", onDelete: Restrict, onUpdate: Restrict)
+  copiedFromId String?
+  copies       List[]         @relation(name: "copies")
+
+  @@index([copiedFromId])
+  @@index([ownerId], type: Hash)
+}
+
+model ListRevision {
+  id        String           @id @default(cuid())
+  owner     User             @relation(fields: [ownerId], references: [id])
+  ownerId   String           @map("user_id")
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  list      List             @relation(fields: [listId], references: [id], name: "list", onDelete: Cascade, onUpdate: Cascade)
+  listId    String
+  elections Election[]
+  members   ListMember[]
+  results   ElectionResult[]
+
+  @@index([listId], type: Hash)
+  @@index([ownerId], type: Hash)
+}
+
+model ListMember {
+  id        String       @id @default(cuid())
+  listRev   ListRevision @relation(fields: [listRevId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  listRevId String
+  position  Int
+  gender    Gender
+
+  @@index([listRevId], type: Hash)
+}
+
+// model Poll {
+//   id               String        @id @unique @map("id")
+//   createdAt        DateTime      @default(now()) @map("created_at")
+//   updatedAt        DateTime      @updatedAt @map("updated_at")
+//   deadline         DateTime?
+//   title            String
+//   type             PollType
+//   description      String?
+//   location         String?
+//   user             User          @relation(fields: [userId], references: [id])
+//   userId           String        @map("user_id")
+//   votes            Vote[]
+//   timeZone         String?       @map("time_zone")
+//   verified         Boolean       @default(false)
+//   options          Option[]
+//   participants     Participant[]
+//   authorName       String        @default("") @map("author_name")
+//   demo             Boolean       @default(false)
+//   comments         Comment[]
+//   legacy           Boolean       @default(false)
+//   closed           Boolean       @default(false)
+//   notifications    Boolean       @default(false)
+//   deleted          Boolean       @default(false)
+//   deletedAt        DateTime?     @map("deleted_at")
+//   touchedAt        DateTime      @default(now()) @map("touched_at")
+//   participantUrlId String        @unique @map("participant_url_id")
+//   adminUrlId       String        @unique @map("admin_url_id")
+
+//   @@index([userId], type: Hash)
+//   @@map("polls")
+// }
+
+// model Participant {
+//   id        String    @id @default(cuid())
+//   name      String
+//   userId    String?   @map("user_id")
+//   poll      Poll      @relation(fields: [pollId], references: [id])
+//   pollId    String    @map("poll_id")
+//   votes     Vote[]
+//   createdAt DateTime  @default(now()) @map("created_at")
+//   updatedAt DateTime? @updatedAt @map("updated_at")
+
+//   @@index([pollId], type: Hash)
+//   @@unique([id, pollId])
+//   @@map("participants")
+// }
+
+// model Option {
+//   id        String    @id @default(cuid())
+//   value     String
+//   pollId    String    @map("poll_id")
+//   poll      Poll      @relation(fields: [pollId], references: [id])
+//   createdAt DateTime  @default(now()) @map("created_at")
+//   updatedAt DateTime? @updatedAt @map("updated_at")
+
+//   @@index([pollId], type: Hash)
+//   @@map("options")
+// }
+
+// enum VoteType {
+//   yes
+//   no
+//   ifNeedBe
+
+//   @@map("vote_type")
+// }
+
+// model Vote {
+//   id            String      @id @default(cuid())
+//   participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+//   participantId String      @map("participant_id")
+//   optionId      String      @map("option_id")
+//   poll          Poll        @relation(fields: [pollId], references: [id])
+//   pollId        String      @map("poll_id")
+//   type          VoteType    @default(yes)
+//   createdAt     DateTime    @default(now()) @map("created_at")
+//   updatedAt     DateTime?   @updatedAt @map("updated_at")
+
+//   @@index([participantId], type: Hash)
+//   @@index([pollId], type: Hash)
+//   @@map("votes")
+// }
+
+// model Comment {
+//   id         String    @id @default(cuid())
+//   content    String
+//   poll       Poll      @relation(fields: [pollId], references: [id])
+//   pollId     String    @map("poll_id")
+//   authorName String    @map("author_name")
+//   user       User?     @relation(fields:[userId], references: [id])
+//   userId     String?   @map("user_id")
+//   createdAt  DateTime  @default(now()) @map("created_at")
+//   updatedAt  DateTime? @updatedAt @map("updated_at")
+
+//   @@unique([id, pollId])
+//   @@index([userId], type: Hash)
+//   @@index([pollId], type: Hash)
+//   @@map("comments")
+// }
