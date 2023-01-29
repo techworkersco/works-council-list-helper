@@ -127,11 +127,20 @@ $focused-outline-color: #4c9ffe;
   &:hover {
     .Remove {
       visibility: visible;
+      color: red;
+      backgroundColor: red;
+    }
+    .Edit {
+      visibility: visible;
     }
   }
 }
 
 .Remove {
+  visibility: hidden;
+}
+
+.Edit {
   visibility: hidden;
 }
 
