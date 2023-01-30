@@ -1,3 +1,4 @@
+import { UniqueIdentifier } from "@dnd-kit/core";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -18,15 +19,16 @@ interface ListMember {
 }
 
 type State = {
-  lists: List[];
+  lists: Record<string, List>;
+  listSort: UniqueIdentifier[]
 };
 
 type Actions = {
-  changeListPosition: (listIndex: number, position: number) => void;
+  changeListPosition: (listIndex: UniqueIdentifier, position: number) => void;
   addList: (name?: string) => void;
   addListItem: (listIndex: number, gender?: Genders) => void;
   changeListItemPosition: (
-    listIndex: number,
+    listId: UniqueIdentifier,
     itemIndex: number,
     position: number
   ) => void;
@@ -35,10 +37,12 @@ type Actions = {
 
 export const useListStore = create(
   immer<State & Actions>((set) => ({
-    lists: [
-      {
+    listSort: ["82471c5f-4207-4b1d-abcb-b98547e01a3e"],
+    lists: {
+      "82471c5f-4207-4b1d-abcb-b98547e01a3e": {
         id: "82471c5f-4207-4b1d-abcb-b98547e01a3e",
         name: "Example List",
+        position: 0,
         members: [
           {
             gender: Genders.man,
@@ -48,26 +52,25 @@ export const useListStore = create(
           },
         ],
       },
-    ],
-    changeListPosition: (listIndex: number, newIndex: number) =>
+    },
+    changeListPosition: (listId: UniqueIdentifier, newIndex: number) =>
       set((state) => {
-        state.lists!.splice(listIndex, newIndex);
+        state.listSort.splice(newIndex, 1, listId)
       }),
 
-    addList: (name: string = "Example List 2") => {
-      set((state) => {
-        state.lists.push({
-          id: crypto.randomUUID(),
+    addList: (name: string = "Example List 2") => set((state) => {
+        const newListId = crypto.randomUUID()
+        state.lists[newListId] = {
+          id: newListId,
           name,
-          members: [],
-        });
-      });
-    },
-    changeListName: (listIndex: number, name: string) => {
-      set((state) => {
+          members: []
+        }
+
+      }),
+    changeListName: (listIndex: number, name: string) => set((state) => {
         state.lists[listIndex].name = name;
-      });
-    },
+      })
+    ,
     addListItem: (listIndex: number, gender?: Genders) =>
       set((state) => {
         state.lists[listIndex].members.push({
@@ -75,16 +78,15 @@ export const useListStore = create(
         });
       }),
     changeListItemPosition: (
-      listIndex: number,
-      itemIndex: number,
-      newIndex: number
+      listId,
+      itemIndex,
+      newIndex
     ) =>
       set((state) => {
-        state.lists[listIndex].members.splice(itemIndex, newIndex);
+        state.lists[listId].members.splice(itemIndex, newIndex);
       }),
     removeListItem: (listIndex: number, itemIndex: number) =>
       set((state) => {
         delete state.lists[listIndex].members[itemIndex];
       }),
-  }))
-);
+  })))

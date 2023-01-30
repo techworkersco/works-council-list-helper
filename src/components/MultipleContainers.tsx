@@ -41,8 +41,8 @@ import { getColor } from "../utilities/getColor";
 
 import { SortableItem } from "./SortableItem/SortableItem";
 import { Edit } from "./Item/components";
-import style from './Item/Item.module.css'
-import { useListStore } from "../store";
+import style from "./Item/Item.module.css";
+// import { useListStore } from "../store";
 
 export default {
   title: "Presets/Sortable/Multiple Containers",
@@ -50,6 +50,11 @@ export default {
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
+
+type Item = { members: UniqueIdentifier[] };
+type Items = Record<UniqueIdentifier, Item>;
+
+const renderActions = () => <Edit className={style.Edit} />
 
 function DroppableContainer({
   children,
@@ -119,8 +124,6 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
-type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
-
 interface Props {
   adjustScale?: boolean;
   cancelDrop?: CancelDrop;
@@ -148,7 +151,6 @@ interface Props {
   vertical?: boolean;
 }
 
-
 const PLACEHOLDER_ID = "placeholder";
 const empty: UniqueIdentifier[] = [];
 
@@ -171,14 +173,14 @@ export function MultipleContainers({
   scrollable,
 }: Props) {
   // TODO: use zustand instead of use state below.
-  const { lists } = useListStore()
+  // const { lists } = useListStore();
   const [items, setItems] = useState<Items>(
     () =>
       initialItems ?? {
-        A: createRange(itemCount, (index) => `A.${index + 1}`),
-        B: createRange(itemCount, (index) => `B.${index + 1}`),
-        C: createRange(itemCount, (index) => `C.${index + 1}`),
-        D: createRange(itemCount, (index) => `D.${index + 1}`),
+        A: { members: createRange(itemCount, (index) => `B.${index + 1}`) },
+        B: { members: createRange(itemCount, (index) => `D.${index + 1}`) },
+        C: { members: createRange(itemCount, (index) => `A.${index + 1}`) },
+        Z: { members: createRange(itemCount, (index) => `Z.${index + 1}`) },
       }
   );
   const [containers, setContainers] = useState(
@@ -222,14 +224,14 @@ export function MultipleContainers({
           const containerItems = items[overId];
 
           // If a container is matched and it contains items (columns 'A', 'B', 'C')
-          if (containerItems.length > 0) {
+          if (containerItems.members.length > 0) {
             // Return the closest droppable within that container
             overId = closestCenter({
               ...args,
               droppableContainers: args.droppableContainers.filter(
                 (container) =>
                   container.id !== overId &&
-                  containerItems.includes(container.id)
+                  containerItems.members.includes(container.id)
               ),
             })[0]?.id;
           }
@@ -266,7 +268,7 @@ export function MultipleContainers({
       return id;
     }
 
-    return Object.keys(items).find((key) => items[key].includes(id));
+    return Object.keys(items).find((key) => items[key].members.includes(id));
   };
 
   const getIndex = (id: UniqueIdentifier) => {
@@ -276,7 +278,7 @@ export function MultipleContainers({
       return -1;
     }
 
-    const index = items[container].indexOf(id);
+    const index = items[container].members.indexOf(id);
 
     return index;
   };
@@ -331,13 +333,13 @@ export function MultipleContainers({
           setItems((items) => {
             const activeItems = items[activeContainer];
             const overItems = items[overContainer];
-            const overIndex = overItems.indexOf(overId);
-            const activeIndex = activeItems.indexOf(active.id);
+            const overIndex = overItems.members.indexOf(overId);
+            const activeIndex = activeItems.members.indexOf(active.id);
 
             let newIndex: number;
 
             if (overId in items) {
-              newIndex = overItems.length + 1;
+              newIndex = overItems.members.length + 1;
             } else {
               const isBelowOverItem =
                 over &&
@@ -348,24 +350,30 @@ export function MultipleContainers({
               const modifier = isBelowOverItem ? 1 : 0;
 
               newIndex =
-                overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+                overIndex >= 0
+                  ? overIndex + modifier
+                  : overItems.members.length + 1;
             }
 
             recentlyMovedToNewContainer.current = true;
 
             return {
               ...items,
-              [activeContainer]: items[activeContainer].filter(
-                (item) => item !== active.id
-              ),
-              [overContainer]: [
-                ...items[overContainer].slice(0, newIndex),
-                items[activeContainer][activeIndex],
-                ...items[overContainer].slice(
-                  newIndex,
-                  items[overContainer].length
+              [activeContainer]: {
+                members: items[activeContainer].members.filter(
+                  (item) => item !== active.id
                 ),
-              ],
+              },
+              [overContainer]: {
+                members: [
+                  ...items[overContainer].members.slice(0, newIndex),
+                  items[activeContainer].members[activeIndex],
+                  ...items[overContainer].members.slice(
+                    newIndex,
+                    items[overContainer].members.length
+                  ),
+                ],
+              },
             };
           });
         }
@@ -401,10 +409,12 @@ export function MultipleContainers({
             setContainers((containers) => [...containers, newContainerId]);
             setItems((items) => ({
               ...items,
-              [activeContainer]: items[activeContainer].filter(
-                (id) => id !== activeId
-              ),
-              [newContainerId]: [active.id],
+              [activeContainer]: {
+                members: items[activeContainer].members.filter(
+                  (id) => id !== activeId
+                ),
+              },
+              [newContainerId]: { members: [active.id] },
             }));
             setActiveId(null);
           });
@@ -414,17 +424,19 @@ export function MultipleContainers({
         const overContainer = findContainer(overId);
 
         if (overContainer) {
-          const activeIndex = items[activeContainer].indexOf(active.id);
-          const overIndex = items[overContainer].indexOf(overId);
+          const activeIndex = items[activeContainer].members.indexOf(active.id);
+          const overIndex = items[overContainer].members.indexOf(overId);
 
           if (activeIndex !== overIndex) {
             setItems((items) => ({
               ...items,
-              [overContainer]: arrayMove(
-                items[overContainer],
-                activeIndex,
-                overIndex
-              ),
+              [overContainer]: {
+                members: arrayMove(
+                  items[overContainer].members,
+                  activeIndex,
+                  overIndex
+                ),
+              },
             }));
           }
         }
@@ -456,14 +468,17 @@ export function MultipleContainers({
               id={containerId}
               label={minimal ? undefined : `List ${containerId}`}
               columns={columns}
-              items={items[containerId]}
+              items={items[containerId].members}
               scrollable={scrollable}
               style={containerStyle}
               unstyled={minimal}
               onRemove={() => handleRemoveColumn(containerId)}
             >
-              <SortableContext items={items[containerId]} strategy={strategy}>
-                {items[containerId].map((value, index) => {
+              <SortableContext
+                items={items[containerId].members}
+                strategy={strategy}
+              >
+                {items[containerId].members.map((value, index) => {
                   return (
                     <SortableItem
                       disabled={isSortingContainer}
@@ -477,7 +492,7 @@ export function MultipleContainers({
                       renderItem={renderItem}
                       containerId={containerId}
                       getIndex={getIndex}
-                      renderActions={() => <Edit className={style.Edit} />}
+                      renderActions={renderActions}
                     />
                   );
                 })}
@@ -527,6 +542,7 @@ export function MultipleContainers({
         color={getColor(id)}
         wrapperStyle={wrapperStyle({ index: 0 })}
         renderItem={renderItem}
+        renderActions={renderActions}
         dragOverlay
       />
     );
@@ -543,7 +559,7 @@ export function MultipleContainers({
         shadow
         unstyled={false}
       >
-        {items[containerId].map((item, index) => (
+        {items[containerId].members.map((item, index) => (
           <Item
             key={item}
             value={item}
@@ -560,6 +576,7 @@ export function MultipleContainers({
             color={getColor(item)}
             wrapperStyle={wrapperStyle({ index })}
             renderItem={renderItem}
+            renderActions={renderActions}
           />
         ))}
       </Container>
@@ -573,7 +590,7 @@ export function MultipleContainers({
   }
 
   function handleRemoveItem(index: number, containerID: UniqueIdentifier) {
-    items[containerID].splice(index, 1)
+    items[containerID].members.splice(index, 1);
     // setContainers((containers) =>
     //   containers.filter((id) => id !== containerID)
     // );
@@ -590,7 +607,7 @@ export function MultipleContainers({
       setContainers((containers) => [...containers, newContainerId]);
       setItems((items) => ({
         ...items,
-        [newContainerId]: [],
+        [newContainerId]: { members: [] },
       }));
     });
   }

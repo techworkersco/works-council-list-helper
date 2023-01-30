@@ -124,7 +124,7 @@ $focused-outline-color: #4c9ffe;
     background-color: var(--color);
   }
 
-  &:hover {
+  &:hover, &:focus, &:active, &:target, &:focus-visible {
     .Remove {
       visibility: visible;
       color: red;

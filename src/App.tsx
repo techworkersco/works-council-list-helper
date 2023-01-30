@@ -11,7 +11,7 @@ function App() {
         columns={1}
         strategy={rectSortingStrategy}
         handle
-        // vertical
+        vertical
         wrapperStyle={() => ({
           // width: 400
         })}
