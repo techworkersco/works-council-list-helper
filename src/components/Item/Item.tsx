@@ -6,6 +6,7 @@ import type { Transform } from "@dnd-kit/utilities";
 import { Handle, Remove } from "./components";
 
 import styles from "./Item.module.css";
+import { ListMember } from "../MultipleContainers";
 
 export interface Props {
   dragOverlay?: boolean;
@@ -23,7 +24,7 @@ export interface Props {
   style?: React.CSSProperties;
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
-  value: React.ReactNode;
+  member: ListMember;
   onRemove?(): void;
   renderItem?(args: {
     dragOverlay: boolean;
@@ -36,13 +37,13 @@ export interface Props {
     style: React.CSSProperties | undefined;
     transform: Props["transform"];
     transition: Props["transition"];
-    value: Props["value"];
+    member: ListMember;
   }): React.ReactElement;
   renderActions?(args: {
     dragging?: boolean;
     sorting?: boolean;
     index?: number;
-    value: Props["value"];
+    member: ListMember;
   }): React.ReactElement;
 }
 
@@ -66,7 +67,7 @@ export const Item = React.memo(
         style,
         transition,
         transform,
-        value,
+        member,
         wrapperStyle,
         renderActions,
         ...props
@@ -97,7 +98,7 @@ export const Item = React.memo(
           style,
           transform,
           transition,
-          value,
+          member
         })
       ) : (
         <li
@@ -146,10 +147,10 @@ export const Item = React.memo(
             {...props}
             tabIndex={!handle ? 0 : undefined}
           >
-            {value}
+            <div>Gender: {member.gender} ID: {member.id}</div>
             <span className={styles.Actions}>
               {(renderActions) &&
-                renderActions({ index, value, sorting, dragging })}
+                renderActions({ index, member, sorting, dragging })}
               {onRemove ? (
                 <Remove className={styles.Remove} onClick={onRemove} />
               ) : null}

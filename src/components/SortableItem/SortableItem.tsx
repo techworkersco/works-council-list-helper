@@ -7,6 +7,7 @@ import { Item } from "../";
 import { ItemProps } from "../Item";
 
 import { getColor } from "../../utilities/getColor";
+import { ListMember } from "../MultipleContainers"
 
 export default {
   title: "Presets/Sortable/Multiple Containers",
@@ -14,7 +15,7 @@ export default {
 
 interface SortableItemProps {
   containerId: UniqueIdentifier;
-  id: UniqueIdentifier;
+  member: ListMember;
   index: number;
   handle: boolean;
   disabled?: boolean;
@@ -28,7 +29,6 @@ interface SortableItemProps {
 
 export function SortableItem({
   disabled,
-  id,
   index,
   handle,
   renderItem,
@@ -37,7 +37,8 @@ export function SortableItem({
   getIndex,
   wrapperStyle,
   onRemove,
-  renderActions
+  renderActions,
+  member
 }: SortableItemProps) {
   const {
     setNodeRef,
@@ -50,7 +51,7 @@ export function SortableItem({
     transform,
     transition,
   } = useSortable({
-    id,
+    id: member.id,
   });
   const mounted = useMountStatus();
   const mountedWhileDragging = isDragging && !mounted;
@@ -58,7 +59,7 @@ export function SortableItem({
   return (
     <Item
       ref={disabled ? undefined : setNodeRef}
-      value={id}
+      member={member}
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
@@ -67,14 +68,14 @@ export function SortableItem({
       wrapperStyle={wrapperStyle({ index })}
       style={style({
         index,
-        value: id,
+        value: member.id,
         isDragging,
         isSorting,
         overIndex: over ? getIndex(over.id) : overIndex,
         containerId,
       })}
       onRemove={onRemove}
-      color={getColor(id)}
+      color={getColor(member.id)}
       transition={transition}
       transform={transform}
       fadeIn={mountedWhileDragging}

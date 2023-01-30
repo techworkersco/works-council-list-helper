@@ -34,7 +34,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { coordinateGetter as multipleContainersCoordinateGetter } from "./multipleContainerKeyboardCoordinates";
 
-import { Item, Container, ContainerProps, Action } from ".";
+import { Item, Container, ContainerProps } from ".";
 
 import { createRange } from "../utilities/createRange";
 import { getColor } from "../utilities/getColor";
@@ -51,10 +51,17 @@ export default {
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
-type Item = { members: UniqueIdentifier[] };
+enum Gender {
+  man = "man",
+  woman = "woman",
+  divers = "divers",
+}
+
+export type ListMember = { id: UniqueIdentifier; gender: Gender };
+type Item = { members: ListMember[] };
 type Items = Record<UniqueIdentifier, Item>;
 
-const renderActions = () => <Edit className={style.Edit} />
+const renderActions = () => <Edit className={style.Edit} />;
 
 function DroppableContainer({
   children,
@@ -67,7 +74,7 @@ function DroppableContainer({
 }: ContainerProps & {
   disabled?: boolean;
   id: UniqueIdentifier;
-  items: UniqueIdentifier[];
+  items: ListMember[];
   style?: React.CSSProperties;
 }) {
   const {
@@ -89,7 +96,7 @@ function DroppableContainer({
   });
   const isOverContainer = over
     ? (id === over.id && active?.data.current?.type !== "container") ||
-      items.includes(over.id)
+      items.some((item) => item.id === over.id)
     : false;
 
   return (
@@ -106,6 +113,7 @@ function DroppableContainer({
         ...attributes,
         ...listeners,
       }}
+      onToggleEdit={() => null}
       columns={columns}
       {...props}
     >
@@ -152,7 +160,7 @@ interface Props {
 }
 
 const PLACEHOLDER_ID = "placeholder";
-const empty: UniqueIdentifier[] = [];
+const empty: ListMember[] = [];
 
 export function MultipleContainers({
   adjustScale = false,
@@ -177,10 +185,30 @@ export function MultipleContainers({
   const [items, setItems] = useState<Items>(
     () =>
       initialItems ?? {
-        A: { members: createRange(itemCount, (index) => `B.${index + 1}`) },
-        B: { members: createRange(itemCount, (index) => `D.${index + 1}`) },
-        C: { members: createRange(itemCount, (index) => `A.${index + 1}`) },
-        Z: { members: createRange(itemCount, (index) => `Z.${index + 1}`) },
+        A: {
+          members: createRange(itemCount, (index) => ({
+            id: `A.${index + 1}`,
+            gender: Gender.woman,
+          })),
+        },
+        B: {
+          members: createRange(itemCount, (index) => ({
+            id: `B.${index + 1}`,
+            gender: Gender.woman,
+          })),
+        },
+        C: {
+          members: createRange(itemCount, (index) => ({
+            id: `C.${index + 1}`,
+            gender: Gender.woman,
+          })),
+        },
+        D: {
+          members: createRange(itemCount, (index) => ({
+            id: `D.${index + 1}`,
+            gender: Gender.woman,
+          })),
+        },
       }
   );
   const [containers, setContainers] = useState(
@@ -231,7 +259,9 @@ export function MultipleContainers({
               droppableContainers: args.droppableContainers.filter(
                 (container) =>
                   container.id !== overId &&
-                  containerItems.members.includes(container.id)
+                  containerItems.members.some(
+                    (member) => member.id === container.id
+                  )
               ),
             })[0]?.id;
           }
@@ -268,19 +298,31 @@ export function MultipleContainers({
       return id;
     }
 
-    return Object.keys(items).find((key) => items[key].members.includes(id));
+    return Object.keys(items).find((key) =>
+      items[key].members.some((member) => member.id === id)
+    );
   };
 
-  const getIndex = (id: UniqueIdentifier) => {
+  const getIndex = (id: UniqueIdentifier, coll: Item) => {
     const container = findContainer(id);
 
     if (!container) {
       return -1;
     }
 
-    const index = items[container].members.indexOf(id);
+    const index = coll.members.findIndex((member) => member.id === id);
 
     return index;
+  };
+
+  const getMemberIndex = (id: UniqueIdentifier) => {
+    const container = findContainer(id);
+
+    if (!container) {
+      return -1;
+    }
+
+    return getIndex(id, items[container]);
   };
 
   const onDragCancel = () => {
@@ -333,8 +375,8 @@ export function MultipleContainers({
           setItems((items) => {
             const activeItems = items[activeContainer];
             const overItems = items[overContainer];
-            const overIndex = overItems.members.indexOf(overId);
-            const activeIndex = activeItems.members.indexOf(active.id);
+            const overIndex = getIndex(overId, overItems);
+            const activeIndex = getIndex(active.id, activeItems);
 
             let newIndex: number;
 
@@ -361,7 +403,7 @@ export function MultipleContainers({
               ...items,
               [activeContainer]: {
                 members: items[activeContainer].members.filter(
-                  (item) => item !== active.id
+                  (item) => item.id !== active.id
                 ),
               },
               [overContainer]: {
@@ -411,10 +453,12 @@ export function MultipleContainers({
               ...items,
               [activeContainer]: {
                 members: items[activeContainer].members.filter(
-                  (id) => id !== activeId
+                  (item) => item.id !== activeId
                 ),
               },
-              [newContainerId]: { members: [active.id] },
+              [newContainerId]: {
+                members: [{ id: active.id, gender: Gender.woman }],
+              },
             }));
             setActiveId(null);
           });
@@ -424,8 +468,8 @@ export function MultipleContainers({
         const overContainer = findContainer(overId);
 
         if (overContainer) {
-          const activeIndex = items[activeContainer].members.indexOf(active.id);
-          const overIndex = items[overContainer].members.indexOf(overId);
+          const activeIndex = getIndex(active.id, items[activeContainer]);
+          const overIndex = getIndex(overId, items[overContainer]);
 
           if (activeIndex !== overIndex) {
             setItems((items) => ({
@@ -478,20 +522,20 @@ export function MultipleContainers({
                 items={items[containerId].members}
                 strategy={strategy}
               >
-                {items[containerId].members.map((value, index) => {
+                {items[containerId].members.map((member, index) => {
                   return (
                     <SortableItem
                       disabled={isSortingContainer}
-                      key={value}
-                      id={value}
+                      member={member}
                       index={index}
                       handle={handle}
+                      key={member.id}
                       onRemove={() => handleRemoveItem(index, containerId)}
                       style={getItemStyles}
                       wrapperStyle={wrapperStyle}
                       renderItem={renderItem}
                       containerId={containerId}
-                      getIndex={getIndex}
+                      getIndex={getMemberIndex}
                       renderActions={renderActions}
                     />
                   );
@@ -507,7 +551,7 @@ export function MultipleContainers({
               onClick={handleAddColumn}
               placeholder
             >
-              + Add column
+              + Add list
             </DroppableContainer>
           )}
         </SortableContext>
@@ -525,27 +569,35 @@ export function MultipleContainers({
     </DndContext>
   );
 
-  function renderSortableItemDragOverlay(id: UniqueIdentifier) {
-    return (
-      <Item
-        value={id}
-        handle={handle}
-        style={getItemStyles({
-          containerId: findContainer(id) as UniqueIdentifier,
-          overIndex: -1,
-          index: getIndex(id),
-          value: id,
-          isSorting: true,
-          isDragging: true,
-          isDragOverlay: true,
-        })}
-        color={getColor(id)}
-        wrapperStyle={wrapperStyle({ index: 0 })}
-        renderItem={renderItem}
-        renderActions={renderActions}
-        dragOverlay
-      />
-    );
+  function renderSortableItemDragOverlay(activeId: UniqueIdentifier) {
+    const container = findContainer(activeId);
+    if (container) {
+      const member = items[container].members.find(
+        (member) => member.id == activeId
+      );
+      if (member) {
+        return (
+          <Item
+            member={member}
+            handle={handle}
+            style={getItemStyles({
+              containerId: findContainer(member.id) as UniqueIdentifier,
+              overIndex: -1,
+              index: getMemberIndex(member.id),
+              value: member.id,
+              isSorting: true,
+              isDragging: true,
+              isDragOverlay: true,
+            })}
+            color={getColor(member.id)}
+            wrapperStyle={wrapperStyle({ index: 0 })}
+            renderItem={renderItem}
+            renderActions={renderActions}
+            dragOverlay
+          />
+        );
+      }
+    }
   }
 
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
@@ -558,22 +610,23 @@ export function MultipleContainers({
         }}
         shadow
         unstyled={false}
+        onToggleEdit={() => null}
       >
-        {items[containerId].members.map((item, index) => (
+        {items[containerId].members.map((member, index) => (
           <Item
-            key={item}
-            value={item}
+            key={member.id}
+            member={member}
             handle={handle}
             style={getItemStyles({
               containerId,
               overIndex: -1,
-              index: getIndex(item),
-              value: item,
+              index: getMemberIndex(member.id),
+              value: member.id,
               isDragging: false,
               isSorting: false,
               isDragOverlay: false,
             })}
-            color={getColor(item)}
+            color={getColor(member.id)}
             wrapperStyle={wrapperStyle({ index })}
             renderItem={renderItem}
             renderActions={renderActions}
