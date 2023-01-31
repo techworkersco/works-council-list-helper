@@ -67,6 +67,7 @@ specifiers:
   react-app-polyfill: ^3.0.0
   react-dev-utils: ^12.0.1
   react-dom: ^18.2.0
+  react-hook-form: ^7.43.0
   react-refresh: ^0.11.0
   react-router-dom: ^6.8.0
   resolve: ^1.20.0
@@ -165,6 +166,7 @@ dependencies:
   react-app-polyfill: 3.0.0
   react-dev-utils: 12.0.1_onq6bphqf24ryelzi6znwfs3ra
   react-dom: 18.2.0_react@18.2.0
+  react-hook-form: 7.43.0_react@18.2.0
   react-refresh: 0.11.0
   resolve: 1.22.1
   resolve-url-loader: 4.0.0
@@ -9251,6 +9253,15 @@ packages:
 
   /react-error-overlay/6.0.11:
     resolution: {integrity: sha512-/6UZ2qgEyH2aqzYZgQPxEnz33NJ2gNsnHA2o5+o4wW9bLM/JYQitNP9xPhsXwC08hMMovfGe/8retsdDsczPRg==}
+    dev: false
+
+  /react-hook-form/7.43.0_react@18.2.0:
+    resolution: {integrity: sha512-/rVEz7T0gLdSFwPqutJ1kn2e0sQNyb9ci/hmwEYr2YG0KF/LSuRLvNrf9QWJM+gj88CjDpDW5Bh/1AD7B2+z9Q==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-is/16.13.1:
