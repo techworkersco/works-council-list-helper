@@ -44,10 +44,6 @@ import { Edit } from "./Item/components";
 import style from "./Item/Item.module.css";
 // import { useListStore } from "../store";
 
-export default {
-  title: "Presets/Sortable/Multiple Containers",
-};
-
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
@@ -58,8 +54,8 @@ enum Gender {
 }
 
 export type ListMember = { id: UniqueIdentifier; gender: Gender };
-type Item = { name: string; members: ListMember[] };
-type Items = Record<UniqueIdentifier, Item>;
+type ListItem = { name: string; members: ListMember[] };
+type Items = Record<UniqueIdentifier, ListItem>;
 
 const renderActions = () => <Edit className={style.Edit} />;
 
@@ -309,7 +305,7 @@ export function ElectionLists({
     );
   };
 
-  const getIndex = (id: UniqueIdentifier, coll: Item) => {
+  const getIndex = (id: UniqueIdentifier, coll: ListItem) => {
     const container = findContainer(id);
 
     if (!container) {
@@ -585,7 +581,7 @@ export function ElectionLists({
     const container = findContainer(activeId);
     if (container) {
       const member = items[container].members.find(
-        (member) => member.id == activeId
+        (member) => member.id === activeId
       );
       if (member) {
         return (

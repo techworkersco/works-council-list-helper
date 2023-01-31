@@ -9,10 +9,6 @@ import { ItemProps } from "../Item";
 import { getColor } from "../../utilities/getColor";
 import { ListMember } from "../ElectionLists"
 
-export default {
-  title: "Presets/Sortable/Multiple Containers",
-};
-
 interface SortableItemProps {
   containerId: UniqueIdentifier;
   member: ListMember;

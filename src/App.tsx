@@ -8,9 +8,9 @@ function App() {
   const {
     register,
     formState: { errors },
-    getValues,
-    getFieldState,
-    handleSubmit,
+    // getValues,
+    // getFieldState,
+    // handleSubmit,
     setValue
   } = useForm({
     mode: "onChange",
