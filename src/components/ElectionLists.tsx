@@ -58,7 +58,7 @@ enum Gender {
 }
 
 export type ListMember = { id: UniqueIdentifier; gender: Gender };
-type Item = { members: ListMember[] };
+type Item = { name: string; members: ListMember[] };
 type Items = Record<UniqueIdentifier, Item>;
 
 const renderActions = () => <Edit className={style.Edit} />;
@@ -70,12 +70,14 @@ function DroppableContainer({
   id,
   items,
   style,
+  onToggleEdit,
   ...props
 }: ContainerProps & {
   disabled?: boolean;
   id: UniqueIdentifier;
   items: ListMember[];
   style?: React.CSSProperties;
+  onToggleEdit?: ContainerProps["onToggleEdit"];
 }) {
   const {
     active,
@@ -113,7 +115,7 @@ function DroppableContainer({
         ...attributes,
         ...listeners,
       }}
-      onToggleEdit={() => null}
+      onToggleEdit={onToggleEdit}
       columns={columns}
       {...props}
     >
@@ -162,7 +164,7 @@ interface Props {
 const PLACEHOLDER_ID = "placeholder";
 const empty: ListMember[] = [];
 
-export function MultipleContainers({
+export function ElectionLists({
   adjustScale = false,
   itemCount = 3,
   cancelDrop,
@@ -186,24 +188,28 @@ export function MultipleContainers({
     () =>
       initialItems ?? {
         A: {
+          name: "A",
           members: createRange(itemCount, (index) => ({
             id: `A.${index + 1}`,
             gender: Gender.woman,
           })),
         },
         B: {
+          name: "B",
           members: createRange(itemCount, (index) => ({
             id: `B.${index + 1}`,
             gender: Gender.woman,
           })),
         },
         C: {
+          name: "C",
           members: createRange(itemCount, (index) => ({
             id: `C.${index + 1}`,
             gender: Gender.woman,
           })),
         },
         D: {
+          name: "D",
           members: createRange(itemCount, (index) => ({
             id: `D.${index + 1}`,
             gender: Gender.woman,
@@ -402,11 +408,13 @@ export function MultipleContainers({
             return {
               ...items,
               [activeContainer]: {
+                ...items[activeContainer],
                 members: items[activeContainer].members.filter(
                   (item) => item.id !== active.id
                 ),
               },
               [overContainer]: {
+                ...items[overContainer],
                 members: [
                   ...items[overContainer].members.slice(0, newIndex),
                   items[activeContainer].members[activeIndex],
@@ -452,11 +460,13 @@ export function MultipleContainers({
             setItems((items) => ({
               ...items,
               [activeContainer]: {
+                ...items[activeContainer],
                 members: items[activeContainer].members.filter(
                   (item) => item.id !== activeId
                 ),
               },
               [newContainerId]: {
+                name: `List ${active.id}`,
                 members: [{ id: active.id, gender: Gender.woman }],
               },
             }));
@@ -475,6 +485,7 @@ export function MultipleContainers({
             setItems((items) => ({
               ...items,
               [overContainer]: {
+                ...items[overContainer],
                 members: arrayMove(
                   items[overContainer].members,
                   activeIndex,
@@ -510,13 +521,14 @@ export function MultipleContainers({
             <DroppableContainer
               key={containerId}
               id={containerId}
-              label={minimal ? undefined : `List ${containerId}`}
+              label={minimal ? undefined : items[containerId].name}
               columns={columns}
               items={items[containerId].members}
               scrollable={scrollable}
               style={containerStyle}
               unstyled={minimal}
               onRemove={() => handleRemoveColumn(containerId)}
+              onToggleEdit={() => {}}
             >
               <SortableContext
                 items={items[containerId].members}
@@ -603,7 +615,7 @@ export function MultipleContainers({
   function renderContainerDragOverlay(containerId: UniqueIdentifier) {
     return (
       <Container
-        label={`Column ${containerId}`}
+        label={items[containerId].name}
         columns={columns}
         style={{
           height: "100%",
@@ -660,7 +672,7 @@ export function MultipleContainers({
       setContainers((containers) => [...containers, newContainerId]);
       setItems((items) => ({
         ...items,
-        [newContainerId]: { members: [] },
+        [newContainerId]: { members: [], name: `List ${newContainerId}` },
       }));
     });
   }

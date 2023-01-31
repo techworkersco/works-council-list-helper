@@ -7,7 +7,7 @@ import { Item } from "../";
 import { ItemProps } from "../Item";
 
 import { getColor } from "../../utilities/getColor";
-import { ListMember } from "../MultipleContainers"
+import { ListMember } from "../ElectionLists"
 
 export default {
   title: "Presets/Sortable/Multiple Containers",

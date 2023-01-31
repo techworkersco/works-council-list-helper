@@ -1,7 +1,25 @@
 .App {
   text-align: left;
+  margin: 6px;
 }
 
+form {
+  display: table;
+}
+
+form .input-control {
+  margin-bottom: 6px;
+  display: table-row;
+}
+
+form .input-control > label, form .input-control > input {
+  padding: 12px;
+  display: table-cell;
+}
+form .input-control > label {
+  text-align: right;
+  font-weight: 400;
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -23,6 +41,7 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
 
 .App-link {
   color: #61dafb;
