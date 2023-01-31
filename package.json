@@ -109,7 +109,8 @@
     "generate": "npm -s run generate:prisma && npm -s run generate:nexus",
     "generate:prisma": "prisma generate",
     "generate:nexus": "ts-node --transpile-only server/schema",
-    "test": "node scripts/test.js",
+    "test": "node scripts/test.js --watchAll=false",
+    "test:watch": "node scripts/test.js",
     "dev": "node scripts/start.js",
     "prepare": "husky install"
   },
@@ -132,14 +133,14 @@
     ]
   },
   "devDependencies": {
+    "prettier": "^2.8.3",
     "react-router-dom": "^6.8.0"
   },
+  "// TODO": "Add prettier below",
   "lint-staged": {
-    "*.ts?x": [
-      "prettier --list-different",
+    "*.{js,jsx,ts,tsx}": [
       "eslint"
-    ],
-    "*.md": "prettier --list-different"
+    ]
   },
   "jest": {
     "roots": [
