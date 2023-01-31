@@ -40,9 +40,6 @@ import { createRange } from "../utilities/createRange";
 import { getColor } from "../utilities/getColor";
 
 import { SortableItem, ItemContent } from "./SortableItem/SortableItem";
-import { Edit } from "./Item/components";
-import style from "./Item/Item.module.css";
-import { itemsEqual } from "@dnd-kit/sortable/dist/utilities";
 // import { useListStore } from "../store";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
