@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 
-import { Item } from "../";
+import { Button, Item } from "../";
 
 import { ItemProps } from "../Item";
 
 import { getColor } from "../../utilities/getColor";
-import { ListMember } from "../ElectionLists"
+import { ListMember } from "../ElectionLists";
+import { Edit } from "../Item/components";
+
+import itemStyles from "../Item/Item.module.css";
 
 interface SortableItemProps {
   containerId: UniqueIdentifier;
@@ -15,12 +18,67 @@ interface SortableItemProps {
   index: number;
   handle: boolean;
   disabled?: boolean;
-  onRemove?: ItemProps["onRemove"]
-  renderActions?: ItemProps["renderActions"]
+  onRemove?: ItemProps["onRemove"];
+  renderActions?: ItemProps["renderActions"];
   style(args: any): React.CSSProperties;
   getIndex(id: UniqueIdentifier): number;
   renderItem(): React.ReactElement;
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
+  onChangeItem: (member: ListMember) => void;
+}
+
+const genderArray = ["man", "woman", "nonbinary"];
+
+const styles = { display: 'block' }
+
+export function ItemForm({
+  member,
+  onChangeItem,
+}: {
+  member: ListMember;
+  onChangeItem?: (member: ListMember) => void;
+}) {
+  const [changed, setChanged] = useState<string | undefined>();
+  return (
+    <>
+      <div>
+        {genderArray.map((gender) => (
+          <Button
+            style={
+              (!changed && member.gender === gender) || changed === gender
+                ? { ...styles, backgroundColor: "whitesmoke", color: "black" }
+                : styles
+            }
+            aria-disabled={member.gender === gender}
+            onClick={() => {
+              setChanged(gender);
+              // @ts-expect-error
+              onChangeItem && onChangeItem({...member, gender })
+            }}
+          >
+            {gender}
+          </Button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+export function ItemContent({
+  member,
+  isEditing = false,
+  onChangeItem,
+}: {
+  member: ListMember;
+  isEditing?: boolean;
+  onChangeItem?: (member: ListMember) => void;
+}) {
+  return (
+    <div>
+      <div>{member.id} <i>{member.gender}</i></div>
+      {isEditing && <ItemForm member={member} onChangeItem={onChangeItem} />}
+    </div>
+  );
 }
 
 export function SortableItem({
@@ -33,9 +91,10 @@ export function SortableItem({
   getIndex,
   wrapperStyle,
   onRemove,
-  renderActions,
-  member
+  onChangeItem,
+  member,
 }: SortableItemProps) {
+  const [isEditing, setEditing] = useState(false);
   const {
     setNodeRef,
     setActivatorNodeRef,
@@ -55,7 +114,13 @@ export function SortableItem({
   return (
     <Item
       ref={disabled ? undefined : setNodeRef}
-      member={member}
+      value={
+        <ItemContent
+          member={member}
+          isEditing={isEditing}
+          onChangeItem={onChangeItem}
+        />
+      }
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
@@ -77,7 +142,9 @@ export function SortableItem({
       fadeIn={mountedWhileDragging}
       listeners={listeners}
       renderItem={renderItem}
-      renderActions={renderActions}
+      renderActions={() => (
+        <Edit className={`${itemStyles.Edit} ${isEditing && 'active'}`} onClick={() => setEditing(!isEditing) } />
+      )}
     />
   );
 }

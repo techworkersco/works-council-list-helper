@@ -39,9 +39,10 @@ import { Item, Container, ContainerProps } from ".";
 import { createRange } from "../utilities/createRange";
 import { getColor } from "../utilities/getColor";
 
-import { SortableItem } from "./SortableItem/SortableItem";
+import { SortableItem, ItemContent } from "./SortableItem/SortableItem";
 import { Edit } from "./Item/components";
 import style from "./Item/Item.module.css";
+import { itemsEqual } from "@dnd-kit/sortable/dist/utilities";
 // import { useListStore } from "../store";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
@@ -56,8 +57,6 @@ enum Gender {
 export type ListMember = { id: UniqueIdentifier; gender: Gender };
 type ListItem = { name: string; members: ListMember[] };
 type Items = Record<UniqueIdentifier, ListItem>;
-
-const renderActions = () => <Edit className={style.Edit} />;
 
 function DroppableContainer({
   children,
@@ -544,10 +543,25 @@ export function ElectionLists({
                       renderItem={renderItem}
                       containerId={containerId}
                       getIndex={getMemberIndex}
-                      renderActions={renderActions}
+                      onChangeItem={(member) =>
+                        setItems((items) => {
+                          items[containerId].members[index].gender =
+                            member.gender;
+                          return {
+                            ...items,
+                          };
+                        })
+                      }
                     />
                   );
                 })}
+                <Container
+                  placeholder
+                  style={{ minWidth: "inherit", width: "100%" }}
+                  onClick={() => handleAddItem(containerId)}
+                >
+                  + Add Member
+                </Container>
               </SortableContext>
             </DroppableContainer>
           ))}
@@ -586,7 +600,7 @@ export function ElectionLists({
       if (member) {
         return (
           <Item
-            member={member}
+            value={<ItemContent member={member} />}
             handle={handle}
             style={getItemStyles({
               containerId: findContainer(member.id) as UniqueIdentifier,
@@ -600,7 +614,6 @@ export function ElectionLists({
             color={getColor(member.id)}
             wrapperStyle={wrapperStyle({ index: 0 })}
             renderItem={renderItem}
-            renderActions={renderActions}
             dragOverlay
           />
         );
@@ -623,7 +636,7 @@ export function ElectionLists({
         {items[containerId].members.map((member, index) => (
           <Item
             key={member.id}
-            member={member}
+            value={<ItemContent member={member} />}
             handle={handle}
             style={getItemStyles({
               containerId,
@@ -637,7 +650,6 @@ export function ElectionLists({
             color={getColor(member.id)}
             wrapperStyle={wrapperStyle({ index })}
             renderItem={renderItem}
-            renderActions={renderActions}
           />
         ))}
       </Container>
@@ -652,13 +664,26 @@ export function ElectionLists({
 
   function handleRemoveItem(index: number, containerID: UniqueIdentifier) {
     items[containerID].members.splice(index, 1);
-    // setContainers((containers) =>
-    //   containers.filter((id) => id !== containerID)
-    // );
     setItems((items) => ({
       ...items,
       [containerID]: items[containerID],
     }));
+  }
+
+  function handleAddItem(containerId: UniqueIdentifier) {
+    setItems((items) => {
+      items[containerId].members.push({
+        id: `${containerId}.${items[containerId].members.length + 1}`,
+        gender: Gender.woman,
+      });
+      return { 
+        ...items,
+        [containerId]: {
+          ...items[containerId],
+          members: items[containerId].members
+        }
+      };
+    });
   }
 
   function handleAddColumn() {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import classNames from "classnames";
 import type { DraggableSyntheticListeners } from "@dnd-kit/core";
 import type { Transform } from "@dnd-kit/utilities";
@@ -24,7 +24,7 @@ export interface Props {
   style?: React.CSSProperties;
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
-  member: ListMember;
+  value: React.ReactElement;
   onRemove?(): void;
   renderItem?(args: {
     dragOverlay: boolean;
@@ -37,13 +37,13 @@ export interface Props {
     style: React.CSSProperties | undefined;
     transform: Props["transform"];
     transition: Props["transition"];
-    member: ListMember;
+    value: React.ReactElement;
   }): React.ReactElement;
   renderActions?(args: {
     dragging?: boolean;
     sorting?: boolean;
     index?: number;
-    member: ListMember;
+    value: React.ReactElement;
   }): React.ReactElement;
 }
 
@@ -67,7 +67,7 @@ export const Item = React.memo(
         style,
         transition,
         transform,
-        member,
+        value,
         wrapperStyle,
         renderActions,
         ...props
@@ -98,7 +98,7 @@ export const Item = React.memo(
           style,
           transform,
           transition,
-          member
+          value
         })
       ) : (
         <li
@@ -147,15 +147,15 @@ export const Item = React.memo(
             {...props}
             tabIndex={!handle ? 0 : undefined}
           >
-            <div>Gender: {member.gender} ID: {member.id}</div>
-            <span className={styles.Actions}>
+            {value}
+            <div className={styles.Actions}>
               {(renderActions) &&
-                renderActions({ index, member, sorting, dragging })}
+                renderActions({ index, value, sorting, dragging })}
               {onRemove ? (
                 <Remove className={styles.Remove} onClick={onRemove} />
               ) : null}
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
-            </span>
+            </div>
           </div>
         </li>
       );

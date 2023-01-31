@@ -8,18 +8,36 @@ form {
 }
 
 form .input-control {
-  margin-bottom: 6px;
   display: table-row;
 }
 
 form .input-control > label, form .input-control > input {
-  padding: 12px;
+  padding: 6px;
+  margin: 6px;  
   display: table-cell;
 }
+
 form .input-control > label {
   text-align: right;
   font-weight: 400;
 }
+
+@media (max-width: 650px) {
+  form .input-control > label, form .input-control > input {
+    display: block;
+  }
+  form .input-control > label {
+    text-align: left
+  }
+}
+
+
+form .input-control .error {
+  padding: 6px;
+  font-style: oblique;
+  color: red;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

@@ -34,7 +34,7 @@ $focused-outline-color: #4c9ffe;
     fill: #919eab;
   }
 
-  &:active {
+  &:active, &.active {
     background-color: var(--background, rgba(0, 0, 0, 0.05));
 
     svg {
@@ -42,7 +42,7 @@ $focused-outline-color: #4c9ffe;
     }
   }
 
-  &:focus-visible {
+  &:focus-visible, &.active {
     outline: none;
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0),
       0 0px 0px 2px $focused-outline-color;
