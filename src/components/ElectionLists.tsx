@@ -613,11 +613,16 @@ export function ElectionLists({
                       minLength={3}
                       placeholder="List name"
                       security=""
+                      tabIndex={0}
+                      autoFocus
                       onChange={(e) => setNewList(e.target.value)}
                     />
                   </div>
                   <div className="input-control">
                     <Button
+                      // @ts-ignore
+                      disabled={!newList || !newList.length}
+                      tabIndex={0}
                       onClick={() => {
                         if (newList) {
                           setNewList(undefined);
@@ -627,6 +632,15 @@ export function ElectionLists({
                       }}
                     >
                       Create
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setNewList(undefined);
+                        setIsNewList(undefined);
+                      }}
+                      style={{ backgroundColor: "darkgrey" }}
+                    >
+                      Cancel
                     </Button>
                   </div>
                 </form>

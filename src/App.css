@@ -1,7 +1,22 @@
 .App {
   text-align: left;
-  margin: 6px;
+  padding: 6px;
 }
+
+/* @media (prefers-color-scheme: dark) {
+  filter: invert(90%);
+} */
+
+body.dark {
+  background-color: white;
+  filter: invert(90%);
+}
+
+h1,h2,h3 {
+  margin: 0;
+  padding: 0;
+}
+
 
 form {
   display: table;
