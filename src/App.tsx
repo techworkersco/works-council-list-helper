@@ -6,7 +6,6 @@ import { rectSortingStrategy } from "@dnd-kit/sortable";
 import { GenderPlurals, Items } from "./components/ElectionLists";
 
 import { getNumSeats } from "./utilities/worksCouncils";
-import { UniqueIdentifier } from "@dnd-kit/core";
 
 // const debounce = (fn: Function, delay: number) => {
 //   let timeout = -1;
