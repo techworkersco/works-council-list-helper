@@ -57,7 +57,11 @@ export enum GenderPlurals {
   nonbinary = "NonBinary",
 }
 
-export type ListMember = { id: UniqueIdentifier; gender: Gender, elected?: boolean };
+export type ListMember = {
+  id: UniqueIdentifier;
+  gender: Gender;
+  elected?: boolean;
+};
 export type ListItem = { name: string; members: ListMember[] };
 export type Items = Record<UniqueIdentifier, ListItem>;
 
@@ -729,7 +733,7 @@ export function ElectionLists({
       delete items[containerID];
       return items;
     });
-    onRemoveColumn && onRemoveColumn(containerID)
+    onRemoveColumn && onRemoveColumn(containerID);
     onChange && onChange(items);
   }
 

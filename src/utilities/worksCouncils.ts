@@ -1,6 +1,3 @@
-import { List } from "@prisma/client";
-import { Items } from "@src/components/ElectionLists";
-
 export const employeeThreshholds: Record<number, number> = {
   5: 0,
   21: 1,
