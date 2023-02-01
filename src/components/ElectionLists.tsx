@@ -227,7 +227,7 @@ export function ElectionLists({
   const [items, setItems] = useState<Items>(
     () =>
       initialItems ?? {
-        Solidarity: {
+        S: {
           name: "Solidarity",
           members: createRange(itemCount, (index) => ({
             id: `S.${index + 1}`,

@@ -73,7 +73,7 @@ type Tactions = {
 function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
   const { totalWorkers, worksCouncilSize, minorityGender, genderQuota } = data;
   const minorityGenderHasMembers = data[`num${minorityGender}`] > 0;
-
+  console.log({genderQuota})
   return (
     <form>
       <NumWorkers
@@ -108,12 +108,12 @@ function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
           {worksCouncilSize}
         </span>
       </div>
-      {minorityGenderHasMembers && (
+      {/* TODO: how does minority gender work with single member works councils? */}
+      {worksCouncilSize > 1 && minorityGenderHasMembers && (
         <div className="input-control">
           <label htmlFor="genderQuota">Dhondt Gender Quota</label>
           <span className="cell" id="numSeats">
-            {
-            `There should be at least ${genderQuota[minorityGender]} works council member(s) for the minority gender (${minorityGender})
+            {`There should be at least ${genderQuota[minorityGender]} works council member(s) for the minority gender (${minorityGender})
                 `}
           </span>
         </div>
@@ -243,7 +243,9 @@ function App() {
               )}
             </div>
             <div className="input-control">
-              <label htmlFor="totalVotes">Seats per list by votes (dhondt)</label>
+              <label htmlFor="totalVotes">
+                Seat distribution (using dhondt method)
+              </label>
               <span className="cell">
                 {JSON.stringify(dHondt(votes, worksCouncilSize), null, 2)}
               </span>

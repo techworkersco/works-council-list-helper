@@ -139,7 +139,13 @@
   },
   "// TODO": "Add prettier below",
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "*.tsx": [
+      "eslint"
+    ],
+    "*.ts": [
+      "eslint"
+    ],
+    "*.js": [
       "eslint"
     ]
   },
