@@ -20,6 +20,8 @@ export const employeeThreshholds: Record<number, number> = {
   9001: 35,
 };
 
+type Tally = Record<string, number>;
+
 export function getNumSeats(numEmployees: number) {
   for (const limit in employeeThreshholds) {
     if (numEmployees < parseInt(limit)) {
@@ -31,40 +33,39 @@ export function getNumSeats(numEmployees: number) {
 }
 
 export function idealGenderQuota(
-  voterTally: Record<string, number>,
+  voterTally: Tally,
   worksCouncilSize: number,
-  workforcePopulation: Record<string, number>
+  workforcePopulation: Tally
 ) {
   const listResults = dHondt(voterTally, worksCouncilSize);
-  Object.entries(listResults).reduce((obj, [k, v]) => {
+  Object.entries(listResults).reduce<Tally>((obj, [k, v]) => {
     // @ts-expect-error
     obj[k] = dHondt(workforcePopulation, v);
     return obj;
   }, {});
 }
-
-export function dHondt(workforcePopulation: Record<string, number>, seats: number) {
-  let dHondt_arrs = [];
+/**
+ * Use it to compute ideal ratios for gender equality, and for general list distribution.
+ * Refers to https://en.wikipedia.org/wiki/D%27Hondt_method
+ * @param tally {Tally} gender distribution, list votes, etc for distribution
+ * @param seats {number}
+ * @returns {Tally}
+ */
+export function dHondt(workforcePopulation: Tally, seats: number): Tally {
+  let dHondt_arrs: [string, number][] = [];
   for (let i = 0; i < seats; i++) {
     for (const [k, v] of Object.entries(workforcePopulation)) {
       dHondt_arrs.push([k, v / i]);
     }
   }
-  return (
-    dHondt_arrs
-      // @ts-expect-error
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, seats)
-      .reduce((obj, [k]) => {
-        // @ts-expect-error
-        if (!obj[k]) {
-          // @ts-expect-error
-          obj[k] = 0;
-        }
-        // @ts-expect-error
-
-        obj[k]++;
-        return obj;
-      }, {})
-  );
+  return dHondt_arrs
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, seats)
+    .reduce<Tally>((obj, [k]) => {
+      if (!obj[k]) {
+        obj[k] = 0;
+      }
+      obj[k]++;
+      return obj;
+    }, {});
 }

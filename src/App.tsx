@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ElectionLists } from "./components/ElectionLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 
-import { GenderPlurals, Items, Gender } from "./components/ElectionLists";
+import { GenderPlurals, Items } from "./components/ElectionLists";
 
 import { dHondt, getNumSeats } from "./utilities/worksCouncils";
 
@@ -62,7 +62,7 @@ type Tdata = {
   totalWorkers: number;
   worksCouncilSize: number;
   minorityGender: GenderPlurals;
-  genderQuota: Record<Gender, number>;
+  genderQuota: Record<GenderPlurals, number>;
 };
 type Tactions = {
   setNumWomen: (num: number) => void;
@@ -72,6 +72,7 @@ type Tactions = {
 
 function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
   const { totalWorkers, worksCouncilSize, minorityGender, genderQuota } = data;
+  const minorityGenderHasMembers = data[`num${minorityGender}`] > 0;
 
   return (
     <form>
@@ -107,22 +108,16 @@ function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
           {worksCouncilSize}
         </span>
       </div>
-      <div className="input-control">
-        <label htmlFor="genderQuota">Dhondt Gender Quota</label>
-        <span className="cell" id="numSeats">
-          {minorityGender === GenderPlurals.man
-            ? `There should be at least ${
-                genderQuota[Gender.man]
-              } works council members for the minority gender (${
-                GenderPlurals.man
-              })`
-            : `There should be at least ${
-                genderQuota[Gender.woman]
-              } works council members for the minority gender (${
-                GenderPlurals.woman
-              })`}
-        </span>
-      </div>
+      {minorityGenderHasMembers && (
+        <div className="input-control">
+          <label htmlFor="genderQuota">Dhondt Gender Quota</label>
+          <span className="cell" id="numSeats">
+            {
+            `There should be at least ${genderQuota[minorityGender]} works council member(s) for the minority gender (${minorityGender})
+                `}
+          </span>
+        </div>
+      )}
     </form>
   );
 }
@@ -141,8 +136,8 @@ function App() {
 
   const genderQuota = dHondt(
     {
-      [Gender.man]: numMen,
-      [Gender.woman]: numWomen,
+      [GenderPlurals.man]: numMen,
+      [GenderPlurals.woman]: numWomen,
     },
     worksCouncilSize
   );
@@ -205,7 +200,7 @@ function App() {
           <h2>Election Results</h2>
           <div className="error">
             {notEnoughSeats &&
-              `Note: You don't have enough choices (${seatCount}) between the lists above to fill the ${worksCouncilSize} person electoral board`}
+              `Note: You don't have enough choices (${seatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
           </div>
           <form>
             {Object.entries(lists)
@@ -228,6 +223,7 @@ function App() {
                       type="number"
                       aria-describedby=""
                       defaultValue={0}
+                      min={0}
                     />
                   </div>
                 );
@@ -247,8 +243,10 @@ function App() {
               )}
             </div>
             <div className="input-control">
-              <label htmlFor="totalVotes">Total Candidates</label>
-              <span className="cell">{JSON.stringify(dHondt(votes, worksCouncilSize), null ,2)}</span>
+              <label htmlFor="totalVotes">Seats per list by votes (dhondt)</label>
+              <span className="cell">
+                {JSON.stringify(dHondt(votes, worksCouncilSize), null, 2)}
+              </span>
             </div>
           </form>
           {!notEnoughSeats &&
