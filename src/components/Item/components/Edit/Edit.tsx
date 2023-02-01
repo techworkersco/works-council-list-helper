@@ -8,9 +8,10 @@ export const Edit = forwardRef<HTMLButtonElement, ActionProps>((props,ref) => {
       {...props}
       ref={ref}
       active={{
-        fill: "rgba(255, 70, 70, 0.95)",
-        background: "rgba(255, 70, 70, 0.1)",
+        fill: "rgba(7, 199, 0, 0.95)",
+        background: "rgba(78, 255, 71, 0.1)",
       }}
+      
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

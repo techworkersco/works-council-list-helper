@@ -34,7 +34,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { coordinateGetter as multipleContainersCoordinateGetter } from "./multipleContainerKeyboardCoordinates";
 
-import { Item, Container, ContainerProps } from ".";
+import { Item, Container, ContainerProps, Button } from ".";
 
 import { createRange } from "../utilities/createRange";
 import { getColor } from "../utilities/getColor";
@@ -45,15 +45,21 @@ import { SortableItem, ItemContent } from "./SortableItem/SortableItem";
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
-enum Gender {
+export enum Gender {
   man = "man",
   woman = "woman",
-  divers = "divers",
+  nonbinary = "nonbinary",
+}
+
+export enum GenderPlurals {
+  man = "Men",
+  woman = "Women",
+  nonbinary = "NonBinary",
 }
 
 export type ListMember = { id: UniqueIdentifier; gender: Gender };
-type ListItem = { name: string; members: ListMember[] };
-type Items = Record<UniqueIdentifier, ListItem>;
+export type ListItem = { name: string; members: ListMember[] };
+export type Items = Record<UniqueIdentifier, ListItem>;
 
 function DroppableContainer({
   children,
@@ -63,6 +69,7 @@ function DroppableContainer({
   items,
   style,
   onToggleEdit,
+  onRenameList,
   ...props
 }: ContainerProps & {
   disabled?: boolean;
@@ -70,6 +77,7 @@ function DroppableContainer({
   items: ListMember[];
   style?: React.CSSProperties;
   onToggleEdit?: ContainerProps["onToggleEdit"];
+  onRenameList?: (name: string) => void;
 }) {
   const {
     active,
@@ -88,10 +96,22 @@ function DroppableContainer({
     },
     animateLayoutChanges,
   });
+  const [isEditingList, setIsEditingList] = useState<boolean>(false);
   const isOverContainer = over
     ? (id === over.id && active?.data.current?.type !== "container") ||
       items.some((item) => item.id === over.id)
     : false;
+
+  if (isEditingList) {
+    // @ts-expect-error
+    props.label = (
+      <ListEditForm
+        onChange={onRenameList}
+        // @ts-expect-error
+        list={{ id, name: props.label, members: [] }}
+      />
+    );
+  }
 
   return (
     <Container
@@ -107,7 +127,10 @@ function DroppableContainer({
         ...attributes,
         ...listeners,
       }}
-      onToggleEdit={onToggleEdit}
+      onToggleEdit={() => {
+        setIsEditingList(!isEditingList);
+      }}
+      isEditing={isEditingList}
       columns={columns}
       {...props}
     >
@@ -151,10 +174,29 @@ interface Props {
   minimal?: boolean;
   scrollable?: boolean;
   vertical?: boolean;
+  onChange?: (lists: Items) => void;
+  onRemoveColumn?: (columnId: UniqueIdentifier) => void;
 }
 
 const PLACEHOLDER_ID = "placeholder";
 const empty: ListMember[] = [];
+
+type ListEditFormProps = {
+  list: ListItem;
+  onChange?: (name: string) => void | undefined;
+};
+
+function ListEditForm({ list, onChange }: ListEditFormProps) {
+  return (
+    <form>
+      <input
+        type="text"
+        defaultValue={list.name}
+        onChange={(e) => onChange && onChange(e.target.value)}
+      />
+    </form>
+  );
+}
 
 export function ElectionLists({
   adjustScale = false,
@@ -173,37 +215,25 @@ export function ElectionLists({
   strategy = verticalListSortingStrategy,
   vertical = false,
   scrollable,
+  onChange,
+  onRemoveColumn,
 }: Props) {
   // TODO: use zustand instead of use state below.
   // const { lists } = useListStore();
   const [items, setItems] = useState<Items>(
     () =>
       initialItems ?? {
-        A: {
-          name: "A",
+        Solidarity: {
+          name: "Solidarity",
           members: createRange(itemCount, (index) => ({
-            id: `A.${index + 1}`,
+            id: `S.${index + 1}`,
             gender: Gender.woman,
           })),
         },
-        B: {
-          name: "B",
+        S1: {
+          name: "Solidarity 1",
           members: createRange(itemCount, (index) => ({
-            id: `B.${index + 1}`,
-            gender: Gender.woman,
-          })),
-        },
-        C: {
-          name: "C",
-          members: createRange(itemCount, (index) => ({
-            id: `C.${index + 1}`,
-            gender: Gender.woman,
-          })),
-        },
-        D: {
-          name: "D",
-          members: createRange(itemCount, (index) => ({
-            id: `D.${index + 1}`,
+            id: `S1.${index + 1}`,
             gender: Gender.woman,
           })),
         },
@@ -212,8 +242,11 @@ export function ElectionLists({
   const [containers, setContainers] = useState(
     Object.keys(items) as UniqueIdentifier[]
   );
+  const [newList, setNewList] = useState<undefined | string>();
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [isNewList, setIsNewList] = useState<undefined | true>();
   const lastOverId = useRef<UniqueIdentifier | null>(null);
+  const newListId = useRef<HTMLInputElement>(null);
   const recentlyMovedToNewContainer = useRef(false);
   const isSortingContainer = activeId ? containers.includes(activeId) : false;
 
@@ -335,8 +368,10 @@ export function ElectionLists({
   };
 
   useEffect(() => {
-    console.log(items);
+    onChange && onChange(items);
+  }, [items, onChange]);
 
+  useEffect(() => {
     requestAnimationFrame(() => {
       recentlyMovedToNewContainer.current = false;
     });
@@ -520,7 +555,7 @@ export function ElectionLists({
               style={containerStyle}
               unstyled={minimal}
               onRemove={() => handleRemoveColumn(containerId)}
-              onToggleEdit={() => {}}
+              onRenameList={(name) => handleRenameList(containerId, name)}
             >
               <SortableContext
                 items={items[containerId].members}
@@ -563,15 +598,48 @@ export function ElectionLists({
             </DroppableContainer>
           ))}
           {minimal ? undefined : (
-            <DroppableContainer
-              id={PLACEHOLDER_ID}
-              disabled={isSortingContainer}
-              items={empty}
-              onClick={handleAddColumn}
-              placeholder
-            >
-              + Add list
-            </DroppableContainer>
+            <div>
+              {isNewList ? (
+                <form>
+                  <div className="input-control">
+                    <input
+                      id={`edit-list-name-${activeId}`}
+                      ref={newListId}
+                      type="text"
+                      minLength={3}
+                      placeholder="List name"
+                      security=""
+                      onChange={(e) => setNewList(e.target.value)}
+                    />
+                  </div>
+                  <div className="input-control">
+                    <Button
+                      onClick={() => {
+                        if (newList) {
+                          setNewList(undefined);
+                          handleAddColumn(newList);
+                          setIsNewList(undefined);
+                        }
+                      }}
+                    >
+                      Create
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <DroppableContainer
+                  id={PLACEHOLDER_ID}
+                  disabled={isSortingContainer}
+                  items={empty}
+                  onClick={() => {
+                    setIsNewList(true);
+                  }}
+                  placeholder
+                >
+                  + Add list
+                </DroppableContainer>
+              )}
+            </div>
           )}
         </SortableContext>
       </div>
@@ -657,6 +725,22 @@ export function ElectionLists({
     setContainers((containers) =>
       containers.filter((id) => id !== containerID)
     );
+    setItems((items) => {
+      delete items[containerID];
+      return items;
+    });
+    onRemoveColumn && onRemoveColumn(containerID)
+    onChange && onChange(items);
+  }
+
+  function handleRenameList(containerID: UniqueIdentifier, name: string) {
+    setItems((items) => ({
+      ...items,
+      [containerID]: {
+        ...items[containerID],
+        name,
+      },
+    }));
   }
 
   function handleRemoveItem(index: number, containerID: UniqueIdentifier) {
@@ -673,26 +757,47 @@ export function ElectionLists({
         id: `${containerId}.${items[containerId].members.length + 1}`,
         gender: Gender.woman,
       });
-      return { 
+      return {
         ...items,
         [containerId]: {
           ...items[containerId],
-          members: items[containerId].members
-        }
+          members: items[containerId].members,
+        },
       };
     });
   }
+  function getRandomizedId(id: string): string {
+    const newId = id + Math.round(Math.random() * 10).toString();
+    if (!containers.includes(newId)) {
+      return newId;
+    }
+    return getRandomizedId(newId);
+  }
+  function getNewId(name: string) {
+    let newContainerId = name
+      .match(/\b([A-Za-z0-9])/g)!
+      .join("")
+      .toUpperCase();
+    if (!containers.includes(newContainerId)) {
+      return newContainerId;
+    }
+    return getRandomizedId(newContainerId);
+  }
 
-  function handleAddColumn() {
-    const newContainerId = getNextContainerId();
+  function handleAddColumn(name: string) {
+    let newContainerId = getNewId(name);
 
-    unstable_batchedUpdates(() => {
-      setContainers((containers) => [...containers, newContainerId]);
-      setItems((items) => ({
-        ...items,
-        [newContainerId]: { members: [], name: `List ${newContainerId}` },
-      }));
-    });
+    if (newList) {
+      unstable_batchedUpdates(() => {
+        setNewList(undefined);
+        setContainers((containers) => [...containers, newContainerId]);
+
+        setItems((items) => ({
+          ...items,
+          [newContainerId]: { members: [], name },
+        }));
+      });
+    }
   }
 
   function getNextContainerId() {

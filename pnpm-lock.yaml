@@ -31,6 +31,7 @@ specifiers:
   camelcase: ^6.2.1
   case-sensitive-paths-webpack-plugin: ^2.4.0
   classnames: ^2.3.2
+  crypto-randomuuid: ^1.0.0
   css-loader: ^6.5.1
   css-minimizer-webpack-plugin: ^3.2.0
   dotenv: ^10.0.0
@@ -133,6 +134,7 @@ dependencies:
   camelcase: 6.3.0
   case-sensitive-paths-webpack-plugin: 2.4.0
   classnames: 2.3.2
+  crypto-randomuuid: 1.0.0
   css-loader: 6.7.3_webpack@5.75.0
   css-minimizer-webpack-plugin: 3.4.1_webpack@5.75.0
   dotenv: 10.0.0
@@ -4459,6 +4461,10 @@ packages:
   /crypto-random-string/2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
     engines: {node: '>=8'}
+    dev: false
+
+  /crypto-randomuuid/1.0.0:
+    resolution: {integrity: sha512-/RC5F4l1SCqD/jazwUF6+t34Cd8zTSAGZ7rvvZu1whZUhD2a5MOGKjSGowoGcpj/cbVZk1ZODIooJEQQq3nNAA==}
     dev: false
 
   /css-blank-pseudo/3.0.3_postcss@8.4.21:

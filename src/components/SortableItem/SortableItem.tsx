@@ -10,8 +10,6 @@ import { getColor } from "../../utilities/getColor";
 import { ListMember } from "../ElectionLists";
 import { Edit } from "../Item/components";
 
-import itemStyles from "../Item/Item.module.css";
-
 interface SortableItemProps {
   containerId: UniqueIdentifier;
   member: ListMember;
@@ -55,6 +53,7 @@ export function ItemForm({
               // @ts-expect-error
               onChangeItem && onChangeItem({...member, gender })
             }}
+            key={member.id + gender}
           >
             {gender}
           </Button>
@@ -143,7 +142,7 @@ export function SortableItem({
       listeners={listeners}
       renderItem={renderItem}
       renderActions={() => (
-        <Edit className={`${itemStyles.Edit} ${isEditing && 'active'}`} onClick={() => setEditing(!isEditing) } />
+        <Edit isActive={isEditing} onClick={() => setEditing(!isEditing) } />
       )}
     />
   );

@@ -21,6 +21,7 @@ export interface Props {
   onClick?(): void;
   onToggleEdit?(): void;
   onRemove?(): void;
+  isEditing?: boolean;
 }
 
 export const Container = forwardRef<HTMLDivElement, Props>(
@@ -40,6 +41,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
       scrollable,
       shadow,
       unstyled,
+      isEditing,
       ...props
     }: Props,
     ref
@@ -73,7 +75,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
           <div className={styles.Header}>
             {label}
             <div className={styles.Actions}>
-              {onToggleEdit ? <Edit onClick={onToggleEdit} /> : undefined}
+              {onToggleEdit ? <Edit onClick={onToggleEdit} isActive={isEditing} /> : undefined}
               {onRemove ? <Remove onClick={onRemove} /> : undefined}
               <Handle {...handleProps} />
             </div>

@@ -11,7 +11,7 @@ form .input-control {
   display: table-row;
 }
 
-form .input-control > label, form .input-control > input {
+form .input-control > label, form .input-control > input, form .input-control > .error, form .input-control > .cell {
   padding: 6px;
   margin: 6px;  
   display: table-cell;
@@ -23,7 +23,7 @@ form .input-control > label {
 }
 
 @media (max-width: 650px) {
-  form .input-control > label, form .input-control > input {
+  form .input-control > label, form .input-control > input,  form .input-control > error {
     display: block;
   }
   form .input-control > label {
@@ -33,7 +33,6 @@ form .input-control > label {
 
 
 form .input-control .error {
-  padding: 6px;
   font-style: oblique;
   color: red;
 }
