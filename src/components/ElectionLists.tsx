@@ -57,7 +57,7 @@ export enum GenderPlurals {
   nonbinary = "NonBinary",
 }
 
-export type ListMember = { id: UniqueIdentifier; gender: Gender };
+export type ListMember = { id: UniqueIdentifier; gender: Gender, elected?: boolean };
 export type ListItem = { name: string; members: ListMember[] };
 export type Items = Record<UniqueIdentifier, ListItem>;
 

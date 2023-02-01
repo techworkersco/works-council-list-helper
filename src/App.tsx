@@ -3,9 +3,9 @@ import { useState } from "react";
 import { ElectionLists } from "./components/ElectionLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 
-import { GenderPlurals, Items } from "./components/ElectionLists";
+import { GenderPlurals, Items, Gender } from "./components/ElectionLists";
 
-import { getNumSeats } from "./utilities/worksCouncils";
+import { dHondt, getNumSeats } from "./utilities/worksCouncils";
 
 // const debounce = (fn: Function, delay: number) => {
 //   let timeout = -1;
@@ -60,7 +60,9 @@ type Tdata = {
   numMen: number;
   numNonBinary: number;
   totalWorkers: number;
-  numElectoralSeats: number;
+  worksCouncilSize: number;
+  minorityGender: GenderPlurals;
+  genderQuota: Record<Gender, number>;
 };
 type Tactions = {
   setNumWomen: (num: number) => void;
@@ -69,7 +71,7 @@ type Tactions = {
 };
 
 function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
-  const { totalWorkers, numElectoralSeats } = data;
+  const { totalWorkers, worksCouncilSize, minorityGender, genderQuota } = data;
 
   return (
     <form>
@@ -99,10 +101,26 @@ function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
         </span>
       </div>
       <div className="input-control">
-        <label htmlFor="numSeats">Electoral Board Size</label>
+        <label htmlFor="numSeats">Works Council Size</label>
         <span className="cell" id="numSeats">
           {" "}
-          {numElectoralSeats}
+          {worksCouncilSize}
+        </span>
+      </div>
+      <div className="input-control">
+        <label htmlFor="genderQuota">Dhondt Gender Quota</label>
+        <span className="cell" id="numSeats">
+          {minorityGender === GenderPlurals.man
+            ? `There should be at least ${
+                genderQuota[Gender.man]
+              } works council members for the minority gender (${
+                GenderPlurals.man
+              })`
+            : `There should be at least ${
+                genderQuota[Gender.woman]
+              } works council members for the minority gender (${
+                GenderPlurals.woman
+              })`}
         </span>
       </div>
     </form>
@@ -116,15 +134,28 @@ function App() {
   const [lists, setLists] = useState<Items>({});
   const [votes, setVotes] = useState<Record<string, number>>({});
   const totalWorkers = numWomen + numMen + numNonBinary;
-  const numElectoralSeats = getNumSeats(totalWorkers);
+  const worksCouncilSize = getNumSeats(totalWorkers);
   const actions = { setNumMen, setNumWomen, setNumNonBinary };
+  const minorityGender =
+    numMen < numWomen ? GenderPlurals.man : GenderPlurals.woman;
+
+  const genderQuota = dHondt(
+    {
+      [Gender.man]: numMen,
+      [Gender.woman]: numWomen,
+    },
+    worksCouncilSize
+  );
+
   const data = {
     numWomen,
     numMen,
     numNonBinary,
     totalWorkers,
-    numElectoralSeats,
-  };
+    worksCouncilSize,
+    minorityGender,
+    genderQuota,
+  } as Tdata;
 
   // const {
   //   register,
@@ -140,12 +171,12 @@ function App() {
   const seatCount = Object.values(lists).reduce((count, list) => {
     return count + list.members.length;
   }, 0);
-  const notEnoughSeats = seatCount < numElectoralSeats;
-  const suggestedSeats = numElectoralSeats * 2;
+  const notEnoughSeats = seatCount < worksCouncilSize;
+  const suggestedSeats = worksCouncilSize * 2;
   const suggestMoreSeats = suggestedSeats > seatCount;
   const totalVotes = Object.values(votes).reduce((totalVotes, listVotes) => {
     return totalVotes + listVotes;
-  }, 0)
+  }, 0);
 
   const moreVotesThanWorkers = totalVotes > totalWorkers;
 
@@ -162,7 +193,7 @@ function App() {
         handle
         onChange={setLists}
         onRemoveColumn={(columnId) => {
-          delete votes[columnId]
+          delete votes[columnId];
         }}
         // vertical
         wrapperStyle={() => ({
@@ -174,7 +205,7 @@ function App() {
           <h2>Election Results</h2>
           <div className="error">
             {notEnoughSeats &&
-              `Note: You don't have enough choices (${seatCount}) between the lists above to fill the ${numElectoralSeats} person electoral board`}
+              `Note: You don't have enough choices (${seatCount}) between the lists above to fill the ${worksCouncilSize} person electoral board`}
           </div>
           <form>
             {Object.entries(lists)
@@ -182,7 +213,9 @@ function App() {
               .map(([listId, list]) => {
                 return (
                   <div key={`votes-${listId}`} className="input-control">
-                    <label htmlFor={`votes-${listId}`}>{list.name} ({list.members.length} candidates)</label>
+                    <label htmlFor={`votes-${listId}`}>
+                      {list.name} ({list.members.length} candidates)
+                    </label>
                     <input
                       onChange={(e) =>
                         setVotes((votes) => {
@@ -192,26 +225,30 @@ function App() {
                           };
                         })
                       }
+                      type="number"
                       aria-describedby=""
                       defaultValue={0}
                     />
                   </div>
                 );
               })}
-              <div className="input-control">
-              <label htmlFor="totalVotes">Total Seats</label>
-              <span className="cell">
-                {seatCount}
-              </span>
+            <div className="input-control">
+              <label htmlFor="totalVotes">Total Candidates</label>
+              <span className="cell">{seatCount}</span>
             </div>
             <div className="input-control">
               <label htmlFor="totalVotes">Total Votes</label>
-              <span className="cell">
-                {totalVotes}
-              </span>
-              {moreVotesThanWorkers && (<div className="error">
-              You have more votes ({totalVotes}) than workers ({totalWorkers})
-              </div>)}
+              <span className="cell">{totalVotes}</span>
+              {moreVotesThanWorkers && (
+                <div className="error">
+                  You have more votes ({totalVotes}) than workers (
+                  {totalWorkers})
+                </div>
+              )}
+            </div>
+            <div className="input-control">
+              <label htmlFor="totalVotes">Total Candidates</label>
+              <span className="cell">{JSON.stringify(dHondt(votes, worksCouncilSize), null ,2)}</span>
             </div>
           </form>
           {!notEnoughSeats &&
