@@ -73,7 +73,7 @@ type Tactions = {
 function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
   const { totalWorkers, worksCouncilSize, minorityGender, genderQuota } = data;
   const minorityGenderHasMembers = data[`num${minorityGender}`] > 0;
-  console.log({genderQuota})
+  console.log({ genderQuota });
   return (
     <form>
       <NumWorkers
@@ -122,6 +122,10 @@ function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
   );
 }
 
+enum ListDisplay {
+  vertical,
+  horizontal,
+}
 function App() {
   const [numWomen, setNumWomen] = useState(0);
   const [numMen, setNumMen] = useState(0);
@@ -130,6 +134,7 @@ function App() {
   const [votes, setVotes] = useState<Record<string, number>>({});
   const totalWorkers = numWomen + numMen + numNonBinary;
   const worksCouncilSize = getNumSeats(totalWorkers);
+  const seatDistribution = dHondt(votes, worksCouncilSize);
   const actions = { setNumMen, setNumWomen, setNumNonBinary };
   const minorityGender =
     numMen < numWomen ? GenderPlurals.man : GenderPlurals.woman;
@@ -163,15 +168,17 @@ function App() {
   // } = useForm({
   //   mode:  "onSubmit",
   // });
-  const seatCount = Object.values(lists).reduce((count, list) => {
+  const candidateSeatCount = Object.values(lists).reduce((count, list) => {
     return count + list.members.length;
   }, 0);
-  const notEnoughSeats = seatCount < worksCouncilSize;
+  const notEnoughSeats = candidateSeatCount < worksCouncilSize;
   const suggestedSeats = worksCouncilSize * 2;
-  const suggestMoreSeats = suggestedSeats > seatCount;
+  const suggestMoreSeats = suggestedSeats > candidateSeatCount;
   const totalVotes = Object.values(votes).reduce((totalVotes, listVotes) => {
     return totalVotes + listVotes;
   }, 0);
+
+  const [listDisplay, setListDisplay] = useState(ListDisplay.horizontal);
 
   const moreVotesThanWorkers = totalVotes > totalWorkers;
 
@@ -181,7 +188,21 @@ function App() {
 
       <h2>Workplace Info</h2>
       <WorkplaceForm actions={actions} data={data} />
-      <h2>Candidate Lists</h2>
+      <h2>
+        Candidate Lists{" "}
+        <button
+          onClick={() => setListDisplay(ListDisplay.horizontal)}
+          disabled={listDisplay === ListDisplay.horizontal}
+        >
+          horizontal
+        </button>
+        <button
+          onClick={() => setListDisplay(ListDisplay.vertical)}
+          disabled={listDisplay === ListDisplay.vertical}
+        >
+          vertical
+        </button>
+      </h2>
       <ElectionLists
         columns={1}
         strategy={rectSortingStrategy}
@@ -190,7 +211,7 @@ function App() {
         onRemoveColumn={(columnId) => {
           delete votes[columnId];
         }}
-        // vertical
+        vertical={listDisplay === ListDisplay.vertical}
         wrapperStyle={() => ({
           // width: 400
         })}
@@ -200,7 +221,7 @@ function App() {
           <h2>Election Results</h2>
           <div className="error">
             {notEnoughSeats &&
-              `Note: You don't have enough choices (${seatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
+              `Note: You don't have enough choices (${candidateSeatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
           </div>
           <form>
             {Object.entries(lists)
@@ -230,7 +251,7 @@ function App() {
               })}
             <div className="input-control">
               <label htmlFor="totalVotes">Total Candidates</label>
-              <span className="cell">{seatCount}</span>
+              <span className="cell">{candidateSeatCount}</span>
             </div>
             <div className="input-control">
               <label htmlFor="totalVotes">Total Votes</label>
@@ -247,7 +268,7 @@ function App() {
                 Seat distribution (using dhondt method)
               </label>
               <span className="cell">
-                {JSON.stringify(dHondt(votes, worksCouncilSize), null, 2)}
+                {JSON.stringify(seatDistribution, null, 2)}
               </span>
             </div>
           </form>

@@ -593,7 +593,7 @@ export function ElectionLists({
                 })}
                 <Container
                   placeholder
-                  style={{ minWidth: "inherit", width: "100%" }}
+                  style={{ minWidth: "inherit", width: "100%", minHeight: 100 }}
                   onClick={() => handleAddItem(containerId)}
                 >
                   + Add Member

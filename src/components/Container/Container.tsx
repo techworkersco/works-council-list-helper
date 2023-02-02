@@ -17,6 +17,7 @@ export interface Props {
   scrollable?: boolean;
   shadow?: boolean;
   placeholder?: boolean;
+  itemPlaceholder?: boolean;
   unstyled?: boolean;
   onClick?(): void;
   onToggleEdit?(): void;
@@ -37,6 +38,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
       onRemove,
       label,
       placeholder,
+      itemPlaceholder,
       style,
       scrollable,
       shadow,
@@ -65,6 +67,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
           horizontal && styles.horizontal,
           hover && styles.hover,
           placeholder && styles.placeholder,
+          itemPlaceholder && (styles.placeholder, styles.itemPlaceholder),
           scrollable && styles.scrollable,
           shadow && styles.shadow
         )}

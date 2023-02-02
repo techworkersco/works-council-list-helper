@@ -46,6 +46,10 @@
     }
   }
 
+  &.item-placeholder {
+    min-height: 100px;
+  }
+
   &.hover {
     background-color: rgb(235, 235, 235, 1);
   }
