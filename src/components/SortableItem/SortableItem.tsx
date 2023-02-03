@@ -7,7 +7,7 @@ import { Button, Item } from "../";
 import { ItemProps } from "../Item";
 
 import { getColor } from "../../utilities/getColor";
-import { ListMember } from "../ElectionLists";
+import { ListMember, Gender } from "../../types";
 import { Edit } from "../Item/components";
 
 interface SortableItemProps {
@@ -25,9 +25,9 @@ interface SortableItemProps {
   onChangeItem: (member: ListMember) => void;
 }
 
-const genderArray = ["man", "woman", "nonbinary"];
+const genderArray = [Gender.man, Gender.woman, Gender.nonbinary];
 
-const styles = { display: 'block' }
+const styles = { display: "block" };
 
 export function ItemForm({
   member,
@@ -50,8 +50,7 @@ export function ItemForm({
             aria-disabled={member.gender === gender}
             onClick={() => {
               setChanged(gender);
-              // @ts-expect-error
-              onChangeItem && onChangeItem({...member, gender })
+              onChangeItem && onChangeItem({ ...member, gender });
             }}
             key={member.id + gender}
           >
@@ -74,7 +73,9 @@ export function ItemContent({
 }) {
   return (
     <div>
-      <div>{member.id} <i>{member.gender}</i></div>
+      <div>
+        {member.id} <i>{member.gender}</i>
+      </div>
       {isEditing && <ItemForm member={member} onChangeItem={onChangeItem} />}
     </div>
   );
@@ -142,7 +143,7 @@ export function SortableItem({
       listeners={listeners}
       renderItem={renderItem}
       renderActions={() => (
-        <Edit isActive={isEditing} onClick={() => setEditing(!isEditing) } />
+        <Edit isActive={isEditing} onClick={() => setEditing(!isEditing)} />
       )}
     />
   );

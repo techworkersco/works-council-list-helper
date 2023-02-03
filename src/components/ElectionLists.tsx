@@ -40,30 +40,11 @@ import { createRange } from "../utilities/createRange";
 import { getColor } from "../utilities/getColor";
 
 import { SortableItem, ItemContent } from "./SortableItem/SortableItem";
-// import { useListStore } from "../store";
+
+import { ListItem, ListMember, Items, Gender } from "../types";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
-
-export enum Gender {
-  man = "man",
-  woman = "woman",
-  nonbinary = "nonbinary",
-}
-
-export enum GenderPlurals {
-  man = "Men",
-  woman = "Women",
-  nonbinary = "NonBinary",
-}
-
-export type ListMember = {
-  id: UniqueIdentifier;
-  gender: Gender;
-  elected?: boolean;
-};
-export type ListItem = { name: string; members: ListMember[] };
-export type Items = Record<UniqueIdentifier, ListItem>;
 
 function DroppableContainer({
   children,
@@ -112,7 +93,7 @@ function DroppableContainer({
       <ListEditForm
         onChange={onRenameList}
         // @ts-expect-error
-        list={{ id, name: props.label, members: [] }}
+        list={{ id, name: props.label, members: [], votes: 0 }}
       />
     );
   }
@@ -195,9 +176,38 @@ function ListEditForm({ list, onChange }: ListEditFormProps) {
     <form>
       <input
         type="text"
+        tabIndex={0}
+        autoFocus
         defaultValue={list.name}
         onChange={(e) => onChange && onChange(e.target.value)}
       />
+    </form>
+  );
+}
+
+type ListVotesFormProps = {
+  list: ListItem;
+  onChange?: (name: number) => void | undefined;
+};
+
+function ListVotesForm({ list, onChange }: ListVotesFormProps) {
+  return (
+    <form>
+      <div className="input-control">
+        <label htmlFor="votes">Votes</label>
+
+        <input
+          id="votes"
+          type="number"
+          min={0}
+          defaultValue={list.votes}
+          onChange={(e) =>
+            onChange &&
+            e.target.value?.length &&
+            onChange(parseInt(e.target.value))
+          }
+        />
+      </div>
     </form>
   );
 }
@@ -233,6 +243,7 @@ export function ElectionLists({
             id: `S.${index + 1}`,
             gender: Gender.woman,
           })),
+          votes: 0,
         },
         S1: {
           name: "Solidarity 1",
@@ -240,6 +251,7 @@ export function ElectionLists({
             id: `S1.${index + 1}`,
             gender: Gender.woman,
           })),
+          votes: 0,
         },
       }
   );
@@ -499,6 +511,7 @@ export function ElectionLists({
               [newContainerId]: {
                 name: `List ${active.id}`,
                 members: [{ id: active.id, gender: Gender.woman }],
+                votes: 0,
               },
             }));
             setActiveId(null);
@@ -598,6 +611,22 @@ export function ElectionLists({
                 >
                   + Add Member
                 </Container>
+                {items[containerId].members.length ? (
+                  <ListVotesForm
+                    onChange={(value) => {
+                      setItems((items) => {
+                        console.log({ value });
+                        items[containerId].votes = value;
+                        // just copying the object here is enough to
+                        // bind the change
+                        return { ...items };
+                      });
+                    }}
+                    list={items[containerId]}
+                  />
+                ) : (
+                  ""
+                )}
               </SortableContext>
             </DroppableContainer>
           ))}
@@ -661,6 +690,7 @@ export function ElectionLists({
           )}
         </SortableContext>
       </div>
+
       {createPortal(
         <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
           {activeId
@@ -812,7 +842,7 @@ export function ElectionLists({
 
         setItems((items) => ({
           ...items,
-          [newContainerId]: { members: [], name },
+          [newContainerId]: { members: [], name, votes: 0 },
         }));
       });
     }

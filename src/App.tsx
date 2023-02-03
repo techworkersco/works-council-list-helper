@@ -3,9 +3,8 @@ import { useState } from "react";
 import { ElectionLists } from "./components/ElectionLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 
-import { GenderPlurals, Items } from "./components/ElectionLists";
-
 import { dHondt, getNumSeats } from "./utilities/worksCouncils";
+import { Tally, GenderPlurals, Items } from "./types";
 
 // const debounce = (fn: Function, delay: number) => {
 //   let timeout = -1;
@@ -134,7 +133,20 @@ function App() {
   const [votes, setVotes] = useState<Record<string, number>>({});
   const totalWorkers = numWomen + numMen + numNonBinary;
   const worksCouncilSize = getNumSeats(totalWorkers);
-  const seatDistribution = dHondt(votes, worksCouncilSize);
+  const voteTally = Object.entries(lists).reduce<Tally>(
+    (votes, [key, list]) => {
+      votes[key] = list.votes;
+      return votes;
+    },
+    {}
+  );
+  const totalVotes = Object.values(voteTally).reduce(
+    (totalVotes, listVotes) => {
+      return totalVotes + listVotes ?? 0;
+    },
+    0
+  );
+  const seatDistribution = dHondt(voteTally, worksCouncilSize);
   const actions = { setNumMen, setNumWomen, setNumNonBinary };
   const minorityGender =
     numMen < numWomen ? GenderPlurals.man : GenderPlurals.woman;
@@ -174,9 +186,6 @@ function App() {
   const notEnoughSeats = candidateSeatCount < worksCouncilSize;
   const suggestedSeats = worksCouncilSize * 2;
   const suggestMoreSeats = suggestedSeats > candidateSeatCount;
-  const totalVotes = Object.values(votes).reduce((totalVotes, listVotes) => {
-    return totalVotes + listVotes;
-  }, 0);
 
   const [listDisplay, setListDisplay] = useState(ListDisplay.horizontal);
 
@@ -224,31 +233,6 @@ function App() {
               `Note: You don't have enough choices (${candidateSeatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
           </div>
           <form>
-            {Object.entries(lists)
-              .filter(([, list]) => list.members.length)
-              .map(([listId, list]) => {
-                return (
-                  <div key={`votes-${listId}`} className="input-control">
-                    <label htmlFor={`votes-${listId}`}>
-                      {list.name} ({list.members.length} candidates)
-                    </label>
-                    <input
-                      onChange={(e) =>
-                        setVotes((votes) => {
-                          return {
-                            ...votes,
-                            [listId]: parseInt(e.target.value),
-                          };
-                        })
-                      }
-                      type="number"
-                      aria-describedby=""
-                      defaultValue={0}
-                      min={0}
-                    />
-                  </div>
-                );
-              })}
             <div className="input-control">
               <label htmlFor="totalVotes">Total Candidates</label>
               <span className="cell">{candidateSeatCount}</span>

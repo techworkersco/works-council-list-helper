@@ -1,3 +1,5 @@
+import type { Tally } from '../types'
+
 export const employeeThreshholds: Record<number, number> = {
   5: 0,
   21: 1,
@@ -19,8 +21,6 @@ export const employeeThreshholds: Record<number, number> = {
   7001: 33,
   9001: 35,
 };
-
-type Tally = Record<string, number>;
 
 export function getNumSeats(numEmployees: number) {
   for (const limit in employeeThreshholds) {
