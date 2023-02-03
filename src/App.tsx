@@ -202,7 +202,7 @@ function App() {
       });
   }
 
-  console.log({ minorityGender })
+  console.log({ minorityGender, seatDistribution })
 
   const genderQuota = dHondt(workplaceGenderTally, worksCouncilSize);
 
@@ -334,7 +334,7 @@ function App() {
         }}
         vertical={listDisplay === ListDisplay.vertical}
         wrapperStyle={() => ({
-          // width: 400
+           maxWidth: 400
         })}
       />
       {totalWorkers > 0 && (

@@ -211,6 +211,7 @@ function ListVotesForm({ list, onChange }: ListVotesFormProps) {
       <label htmlFor="votes">Votes</label>
 
       <input
+        name="votes"
         type="number"
         min={0}
         defaultValue={list.votes}
@@ -626,9 +627,7 @@ export function CandidateLists({
                           setItems((items) => {
                             items[containerId].members[index].gender =
                               member.gender;
-                            return {
-                              ...items,
-                            };
+                            return { ...items };
                           })
                         }
                       />
@@ -651,7 +650,9 @@ export function CandidateLists({
                         {minorityGender && (
                           <div className="input-control">
                             <label>Gender Distribution</label>
-                            <div className={classNames(styles.ListStats, 'cell')}>
+                            <div
+                              className={classNames(styles.ListStats, "cell")}
+                            >
                               {genderArray.map((gender) => {
                                 return (
                                   <span key={containerId + gender}>
@@ -689,7 +690,7 @@ export function CandidateLists({
                                 {data.listDistribution}
                               </span>
                             </div>
-                            <div className="input-control">
+                            {/* <div className="input-control">
                               <label>List Size Gender Ratio</label>
                               <span className="cell">
                                 {JSON.stringify(
@@ -698,8 +699,8 @@ export function CandidateLists({
                                   2
                                 )}
                               </span>
-                            </div>
-                            <div className="input-control">
+                            </div> */}
+                            {minorityGender && <div className="input-control">
                               <label htmlFor="listGenderQuota">
                                 Gender Quota
                               </label>
@@ -707,7 +708,7 @@ export function CandidateLists({
                                 {data.isGenderRatioValid === true && "valid"}
                                 {data.isGenderRatioValid === false && "invalid"}
                               </span>
-                            </div>
+                            </div>}
                           </>
                         ) : (
                           ""
