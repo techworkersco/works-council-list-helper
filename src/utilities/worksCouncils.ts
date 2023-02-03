@@ -55,7 +55,9 @@ export function dHondt(workforcePopulation: Tally, seats: number): Tally {
   let dHondt_arrs: [string, number][] = [];
   for (let i = 0; i < seats; i++) {
     for (const [k, v] of Object.entries(workforcePopulation)) {
-      dHondt_arrs.push([k, v / i]);
+      if (v > 0) {
+        dHondt_arrs.push([k, v / i]);
+      }
     }
   }
   return dHondt_arrs

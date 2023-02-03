@@ -52,6 +52,7 @@ import {
   genderArray,
   GenderPlurals,
 } from "../../types";
+import { dHondt } from "src/utilities/worksCouncils";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -153,6 +154,7 @@ interface Props {
   genderQuota: Tally;
   minorityGender?: GenderPlurals;
   seatDistribution?: Tally;
+  workplaceGenderTally?: Record<GenderPlurals, number> 
   getItemStyles?(args: {
     value: UniqueIdentifier;
     index: number;
@@ -236,6 +238,7 @@ export function CandidateLists({
   genderQuota,
   seatDistribution,
   minorityGender,
+  workplaceGenderTally,
   coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
@@ -579,7 +582,15 @@ export function CandidateLists({
         >
           {containers.map((containerId) => {
             const container = items[containerId];
-            const listDistribution = seatDistribution && seatDistribution[containerId]
+            const listDistribution = seatDistribution && seatDistribution[containerId];
+            const genderRatio = workplaceGenderTally && dHondt(workplaceGenderTally, container.members.length)
+            console.log({genderRatio})
+            let isGenderRatioValid = null;
+
+            if(genderRatio && minorityGender) {
+              isGenderRatioValid = Boolean(genderRatio[minorityGender] >= genderQuota[minorityGender])
+              console.log({isGenderRatioValid})
+            }
             return  (
               <DroppableContainer
                 key={containerId}
@@ -672,6 +683,13 @@ export function CandidateLists({
                             <label>Seat Distribution (raw)</label>
                             <span className="cell">
                               {listDistribution}
+                            </span>
+                          </div>
+                          <div className="input-control">
+                            <label htmlFor="listGenderQuota">Gender Quota</label>
+                            <span id="listGenderQuota" className="cell">
+                              {(isGenderRatioValid === true) && 'valid'}
+                              {(isGenderRatioValid === false) && 'invalid'}
                             </span>
                           </div>
                         </div>
