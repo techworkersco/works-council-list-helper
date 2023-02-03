@@ -30,6 +30,7 @@ form, .table {
 .input-control > label,
 .input-control > input,
 .input-control > .error,
+.input-control > .warning,
 .input-control > .cell {
   padding: 6px;
   margin: 6px;
@@ -44,7 +45,9 @@ form, .table {
 @media (max-width: 650px) {
   .input-control > label,
   .input-control > input,
-  .input-control > error {
+  .input-control > .error,
+  .input-control > .cell,
+  .input-control > .warning   {
     display: block;
   }
   .input-control > label {
@@ -53,8 +56,16 @@ form, .table {
 }
 
 form .input-control .error {
+  font-size: 1rem;
   font-style: oblique;
   color: red;
+}
+
+form .input-control .warning {
+  font-size: 1rem;
+  font-style: oblique;
+  color: #8f6b11;
+  background-color: lightyellow;
 }
 
 .App-logo {

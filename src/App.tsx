@@ -233,15 +233,21 @@ function App() {
       />
       {totalWorkers > 0 && (
         <>
-          <h2>Election Results</h2>
-          <div className="error">
-            {notEnoughSeats &&
-              `Note: You don't have enough choices (${candidateSeatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
-          </div>
           <form>
             <div className="input-control">
               <label htmlFor="totalVotes">Total Candidates</label>
               <span className="cell">{candidateSeatCount}</span>
+              {!notEnoughSeats && suggestMoreSeats && (
+                <div className="warning">
+                  Note: For a more optimal and fair election, you should have
+                  at least {suggestedSeats} candidates between available
+                  lists.
+                </div>
+              )}
+              <div className="error">
+                {notEnoughSeats &&
+                  `Note: You don't have enough choices (${candidateSeatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
+              </div>
             </div>
             <div className="input-control">
               <label htmlFor="totalVotes">Total Votes</label>
@@ -254,9 +260,6 @@ function App() {
               )}
             </div>
           </form>
-          {!notEnoughSeats &&
-            suggestMoreSeats &&
-            `Note: For a more optimal and fair election, you should have at least ${suggestedSeats} candidates between available lists.`}
         </>
       )}
     </div>
