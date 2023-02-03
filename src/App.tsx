@@ -130,7 +130,6 @@ function App() {
   const [numMen, setNumMen] = useState(0);
   const [numNonBinary, setNumNonBinary] = useState(0);
   const [lists, setLists] = useState<Items>({});
-  const [votes, setVotes] = useState<Record<string, number>>({});
   const totalWorkers = numWomen + numMen + numNonBinary;
   const worksCouncilSize = getNumSeats(totalWorkers);
   const voteTally = Object.entries(lists).reduce<Tally>(
@@ -218,7 +217,7 @@ function App() {
         handle
         onChange={setLists}
         onRemoveColumn={(columnId) => {
-          delete votes[columnId];
+          delete lists[columnId];
         }}
         vertical={listDisplay === ListDisplay.vertical}
         wrapperStyle={() => ({
