@@ -7,7 +7,7 @@ import { Button, Item } from "../";
 import { ItemProps } from "../Item";
 
 import { getColor } from "../../utilities/getColor";
-import { ListMember, Gender } from "../../types";
+import { ListMember, genderArray } from "../../types";
 import { Edit } from "../Item/components";
 
 interface SortableItemProps {
@@ -25,7 +25,6 @@ interface SortableItemProps {
   onChangeItem: (member: ListMember) => void;
 }
 
-const genderArray = [Gender.man, Gender.woman, Gender.nonbinary];
 
 const styles = { display: "block" };
 
@@ -136,7 +135,7 @@ export function SortableItem({
         containerId,
       })}
       onRemove={onRemove}
-      color={getColor(member.id)}
+      color={getColor(member)}
       transition={transition}
       transform={transform}
       fadeIn={mountedWhileDragging}

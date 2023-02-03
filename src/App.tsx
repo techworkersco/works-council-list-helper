@@ -1,6 +1,6 @@
 import "./App.css";
 import { useState } from "react";
-import { ElectionLists } from "./components/ElectionLists";
+import { CandidateLists } from "./components/CandidateLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 
 import { dHondt, getNumSeats } from "./utilities/worksCouncils";
@@ -147,8 +147,12 @@ function App() {
   );
   const seatDistribution = dHondt(voteTally, worksCouncilSize);
   const actions = { setNumMen, setNumWomen, setNumNonBinary };
-  const minorityGender =
-    numMen < numWomen ? GenderPlurals.man : GenderPlurals.woman;
+  let minorityGender;
+
+  if (totalWorkers > 3) {
+    minorityGender =
+      numMen < numWomen ? GenderPlurals.man : GenderPlurals.woman;
+  }
 
   const genderQuota = dHondt(
     {
@@ -211,14 +215,17 @@ function App() {
           vertical
         </button>
       </h2>
-      <ElectionLists
+      <CandidateLists
         columns={1}
         strategy={rectSortingStrategy}
         handle
         onChange={setLists}
+        minorityGender={minorityGender}
+        seatDistribution={seatDistribution}
         onRemoveColumn={(columnId) => {
           delete lists[columnId];
         }}
+        genderQuota={genderQuota}
         vertical={listDisplay === ListDisplay.vertical}
         wrapperStyle={() => ({
           // width: 400

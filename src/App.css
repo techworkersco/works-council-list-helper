@@ -12,40 +12,45 @@ body.dark {
   filter: invert(90%);
 }
 
-h1,h2,h3 {
+h1,
+h2,
+h3 {
   margin: 0;
   padding: 0;
 }
 
-
-form {
+form, .table {
   display: table;
 }
 
-form .input-control {
+.input-control {
   display: table-row;
 }
 
-form .input-control > label, form .input-control > input, form .input-control > .error, form .input-control > .cell {
+.input-control > label,
+.input-control > input,
+.input-control > .error,
+.input-control > .cell {
   padding: 6px;
-  margin: 6px;  
+  margin: 6px;
   display: table-cell;
 }
 
-form .input-control > label {
+.input-control > label {
   text-align: right;
   font-weight: 400;
 }
 
 @media (max-width: 650px) {
-  form .input-control > label, form .input-control > input,  form .input-control > error {
+  .input-control > label,
+  .input-control > input,
+  .input-control > error {
     display: block;
   }
-  form .input-control > label {
-    text-align: left
+  .input-control > label {
+    text-align: left;
   }
 }
-
 
 form .input-control .error {
   font-style: oblique;

@@ -32,16 +32,26 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { coordinateGetter as multipleContainersCoordinateGetter } from "./multipleContainerKeyboardCoordinates";
+import { coordinateGetter as multipleContainersCoordinateGetter } from "../multipleContainerKeyboardCoordinates";
 
-import { Item, Container, ContainerProps, Button } from ".";
+import { Item, Container, ContainerProps, Button } from "..";
 
-import { createRange } from "../utilities/createRange";
-import { getColor } from "../utilities/getColor";
+import { createRange } from "../../utilities/createRange";
+import { getColor } from "../../utilities/getColor";
 
-import { SortableItem, ItemContent } from "./SortableItem/SortableItem";
+import { SortableItem, ItemContent } from "../SortableItem/SortableItem";
 
-import { ListItem, ListMember, Items, Gender } from "../types";
+import styles from "./CandidateLists.module.css";
+
+import {
+  Tally,
+  ListItem,
+  ListMember,
+  Items,
+  Gender,
+  genderArray,
+  GenderPlurals,
+} from "../../types";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -140,6 +150,9 @@ interface Props {
   columns?: number;
   containerStyle?: React.CSSProperties;
   coordinateGetter?: KeyboardCoordinateGetter;
+  genderQuota: Tally;
+  minorityGender?: GenderPlurals;
+  seatDistribution?: Tally;
   getItemStyles?(args: {
     value: UniqueIdentifier;
     index: number;
@@ -212,7 +225,7 @@ function ListVotesForm({ list, onChange }: ListVotesFormProps) {
   );
 }
 
-export function ElectionLists({
+export function CandidateLists({
   adjustScale = false,
   itemCount = 3,
   cancelDrop,
@@ -220,6 +233,9 @@ export function ElectionLists({
   handle = false,
   items: initialItems,
   containerStyle,
+  genderQuota,
+  seatDistribution,
+  minorityGender,
   coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
@@ -561,75 +577,116 @@ export function ElectionLists({
               : horizontalListSortingStrategy
           }
         >
-          {containers.map((containerId) => (
-            <DroppableContainer
-              key={containerId}
-              id={containerId}
-              label={minimal ? undefined : items[containerId].name}
-              columns={columns}
-              items={items[containerId].members}
-              scrollable={scrollable}
-              style={containerStyle}
-              unstyled={minimal}
-              onRemove={() => handleRemoveColumn(containerId)}
-              onRenameList={(name) => handleRenameList(containerId, name)}
-            >
-              <SortableContext
-                items={items[containerId].members}
-                strategy={strategy}
+          {containers.map((containerId) => {
+            const container = items[containerId];
+            const listDistribution = seatDistribution && seatDistribution[containerId]
+            return  (
+              <DroppableContainer
+                key={containerId}
+                id={containerId}
+                label={minimal ? undefined : container.name}
+                columns={columns}
+                items={container.members}
+                scrollable={scrollable}
+                style={containerStyle}
+                unstyled={minimal}
+                onRemove={() => handleRemoveColumn(containerId)}
+                onRenameList={(name) => handleRenameList(containerId, name)}
               >
-                {items[containerId].members.map((member, index) => {
-                  return (
-                    <SortableItem
-                      disabled={isSortingContainer}
-                      member={member}
-                      index={index}
-                      handle={handle}
-                      key={member.id}
-                      onRemove={() => handleRemoveItem(index, containerId)}
-                      style={getItemStyles}
-                      wrapperStyle={wrapperStyle}
-                      renderItem={renderItem}
-                      containerId={containerId}
-                      getIndex={getMemberIndex}
-                      onChangeItem={(member) =>
-                        setItems((items) => {
-                          items[containerId].members[index].gender =
-                            member.gender;
-                          return {
-                            ...items,
-                          };
-                        })
-                      }
-                    />
-                  );
-                })}
-                <Container
-                  placeholder
-                  style={{ minWidth: "inherit", width: "100%", minHeight: 100 }}
-                  onClick={() => handleAddItem(containerId)}
+                <SortableContext
+                  items={container.members}
+                  strategy={strategy}
                 >
-                  + Add Member
-                </Container>
-                {items[containerId].members.length ? (
-                  <ListVotesForm
-                    onChange={(value) => {
-                      setItems((items) => {
-                        console.log({ value });
-                        items[containerId].votes = value;
-                        // just copying the object here is enough to
-                        // bind the change
-                        return { ...items };
-                      });
-                    }}
-                    list={items[containerId]}
-                  />
-                ) : (
-                  ""
-                )}
-              </SortableContext>
-            </DroppableContainer>
-          ))}
+                  {container.members.map((member, index) => {
+                    if(listDistribution && index < listDistribution) {
+                      member.elected = true
+                    }
+                    else {
+                      member.elected = false
+                    }
+                    return (
+                      <SortableItem
+                        disabled={isSortingContainer}
+                        member={member}
+                        index={index}
+                        handle={handle}
+                        key={member.id}
+                        onRemove={() => handleRemoveItem(index, containerId)}
+                        style={getItemStyles}
+                        wrapperStyle={wrapperStyle}
+                        renderItem={renderItem}
+                        containerId={containerId}
+                        getIndex={getMemberIndex}
+                        onChangeItem={(member) =>
+                          setItems((items) => {
+                            items[containerId].members[index].gender =
+                              member.gender;
+                            return {
+                              ...items,
+                            };
+                          })
+                        }
+                      />
+                    );
+                  })}
+                  <Container
+                    placeholder
+                    style={{ minWidth: "inherit", width: "100%", minHeight: 100 }}
+                    onClick={() => handleAddItem(containerId)}
+                  >
+                    + Add Member
+                  </Container>
+                  {container.members.length ? (
+                    <>
+                      {minorityGender && (
+                        <div className={styles.ListStats}>
+                          {genderArray.map((gender) => {
+                            return (
+                              <span key={containerId + gender}>
+                                {gender}:{" "}
+                                {
+                                  items[containerId].members.filter(
+                                    (m) => m.gender === gender
+                                  ).length
+                                }
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+  
+                      <ListVotesForm
+                        onChange={(value) => {
+                          setItems((items) => {
+                            items[containerId].votes = value;
+                            // just copying the object here is enough to
+                            // bind the change
+                            return { ...items };
+                          });
+                        }}
+                        list={items[containerId]}
+                      />
+                      {listDistribution ? (
+                        <div className="table">
+                          <div className="input-control">
+                            <label>Seat Distribution (raw)</label>
+                            <span className="cell">
+                              {listDistribution}
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </SortableContext>
+              </DroppableContainer>
+            )
+          }
+         )}
           {minimal ? undefined : (
             <div>
               {isNewList ? (
@@ -724,7 +781,7 @@ export function ElectionLists({
               isDragging: true,
               isDragOverlay: true,
             })}
-            color={getColor(member.id)}
+            color={getColor(member)}
             wrapperStyle={wrapperStyle({ index: 0 })}
             renderItem={renderItem}
             dragOverlay
@@ -760,7 +817,7 @@ export function ElectionLists({
               isSorting: false,
               isDragOverlay: false,
             })}
-            color={getColor(member.id)}
+            color={getColor(member)}
             wrapperStyle={wrapperStyle({ index })}
             renderItem={renderItem}
           />
