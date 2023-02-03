@@ -1,10 +1,10 @@
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CandidateLists } from "./components/CandidateLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 
 import { dHondt, getNumSeats } from "./utilities/worksCouncils";
-import { Tally, GenderPlurals, Items } from "./types";
+import { Tally, GenderEnum, Items, ListData } from "./types";
 
 // const debounce = (fn: Function, delay: number) => {
 //   let timeout = -1;
@@ -23,7 +23,7 @@ const NumWorkers = ({
   actions,
   data,
 }: {
-  gender: GenderPlurals;
+  gender: GenderEnum;
   actions: Tactions;
   data: Tdata;
 }) => {
@@ -60,8 +60,9 @@ type Tdata = {
   numNonBinary: number;
   totalWorkers: number;
   worksCouncilSize: number;
-  minorityGender: GenderPlurals;
-  genderQuota: Record<GenderPlurals, number>;
+  minorityGender: GenderEnum;
+  genderQuota: Record<GenderEnum, number>;
+  isGenderQuotaAchieved: boolean;
 };
 type Tactions = {
   setNumWomen: (num: number) => void;
@@ -78,20 +79,20 @@ function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
       <NumWorkers
         data={data}
         actions={actions}
-        key={GenderPlurals.woman}
-        gender={GenderPlurals.woman}
+        key={GenderEnum.woman}
+        gender={GenderEnum.woman}
       />
       <NumWorkers
         data={data}
         actions={actions}
-        key={GenderPlurals.nonbinary}
-        gender={GenderPlurals.nonbinary}
+        key={GenderEnum.nonbinary}
+        gender={GenderEnum.nonbinary}
       />
       <NumWorkers
         data={data}
         actions={actions}
-        key={GenderPlurals.man}
-        gender={GenderPlurals.man}
+        key={GenderEnum.man}
+        gender={GenderEnum.man}
       />
       <div className="input-control">
         <label htmlFor="totalWorkers">Total workers</label>
@@ -111,10 +112,17 @@ function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
       {worksCouncilSize > 1 && minorityGenderHasMembers && (
         <div className="input-control">
           <label htmlFor="genderQuota">Dhondt Gender Quota</label>
-          <span className="cell" id="numSeats">
-            {`There should be at least ${genderQuota[minorityGender]} works council member(s) for the minority gender (${minorityGender})
+          <div
+            className={data.isGenderQuotaAchieved ? "cell" : "error"}
+            id="numSeats"
+          >
+            {`There ${
+              data.isGenderQuotaAchieved ? "is" : "should be"
+            } at least ${
+              genderQuota[minorityGender]
+            } works council member(s) for the minority gender (${minorityGender})
                 `}
-          </span>
+          </div>
         </div>
       )}
     </form>
@@ -147,30 +155,20 @@ function App() {
   );
   const seatDistribution = dHondt(voteTally, worksCouncilSize);
   const actions = { setNumMen, setNumWomen, setNumNonBinary };
-  let minorityGender;
+  let minorityGender: undefined | GenderEnum;
 
   if (totalWorkers > 3) {
     minorityGender =
-      numMen < numWomen ? GenderPlurals.man : GenderPlurals.woman;
+      numMen < numWomen ? GenderEnum.man : GenderEnum.woman;
   }
 
-  const genderQuota = dHondt(
-    {
-      [GenderPlurals.man]: numMen,
-      [GenderPlurals.woman]: numWomen,
-    },
-    worksCouncilSize
-  );
+  const workplaceGenderTally = {
+    [GenderEnum.man]: numMen,
+    [GenderEnum.woman]: numWomen,
+    [GenderEnum.nonbinary]: 0,
+  };
 
-  const data = {
-    numWomen,
-    numMen,
-    numNonBinary,
-    totalWorkers,
-    worksCouncilSize,
-    minorityGender,
-    genderQuota,
-  } as Tdata;
+  const genderQuota = dHondt(workplaceGenderTally, worksCouncilSize);
 
   // const {
   //   register,
@@ -193,6 +191,72 @@ function App() {
   const [listDisplay, setListDisplay] = useState(ListDisplay.horizontal);
 
   const moreVotesThanWorkers = totalVotes > totalWorkers;
+
+  const listData: ListData = Object.entries(lists).reduce(
+    (listData, [listId, list]) => {
+      const electedListGenderTally: Record<GenderEnum, number> = list.members
+        .filter((m) => m.elected)
+        .reduce(
+          (tally, member, index) => {
+            if (tally[member.gender] === undefined) {
+              tally[member.gender] = 0;
+            }
+            tally[member.gender]++;
+            return tally;
+          },
+          {
+            [GenderEnum.man]: 0,
+            [GenderEnum.woman]: 0,
+            [GenderEnum.nonbinary]: 0,
+          } as Record<GenderEnum, number>
+        );
+
+      const listDistribution = seatDistribution && seatDistribution[listId];
+      const listSizeGenderRatio =
+        workplaceGenderTally &&
+        listDistribution &&
+        dHondt(workplaceGenderTally, listDistribution);
+
+      let isGenderRatioValid = null;
+
+      if (listSizeGenderRatio && minorityGender) {
+        isGenderRatioValid = Boolean(
+          electedListGenderTally[minorityGender] >=
+            listSizeGenderRatio[minorityGender]
+        );
+      }
+      listData[listId] = {
+        electedListGenderTally,
+        listDistribution,
+        listSizeGenderRatio,
+        isGenderRatioValid,
+      };
+
+      return listData;
+    },
+    {} as ListData
+  );
+
+  const numMinorityElected = Object.values(lists).reduce((total, list) => {
+    const numMinority = list.members.filter(
+      (m) => m.elected && m.gender === minorityGender
+    ).length;
+    return (total += numMinority);
+  }, 0);
+
+  const isGenderQuotaAchieved =
+    minorityGender && numMinorityElected >= genderQuota[minorityGender];
+
+  const data = {
+    numWomen,
+    numMen,
+    numNonBinary,
+    totalWorkers,
+    worksCouncilSize,
+    minorityGender,
+    genderQuota,
+    isGenderQuotaAchieved,
+  } as Tdata;
 
   return (
     <div className="App">
@@ -221,11 +285,10 @@ function App() {
         handle
         onChange={setLists}
         minorityGender={minorityGender}
-        seatDistribution={seatDistribution}
+        listData={listData}
         onRemoveColumn={(columnId) => {
           delete lists[columnId];
         }}
-        genderQuota={genderQuota}
         vertical={listDisplay === ListDisplay.vertical}
         wrapperStyle={() => ({
           // width: 400
@@ -239,9 +302,8 @@ function App() {
               <span className="cell">{candidateSeatCount}</span>
               {!notEnoughSeats && suggestMoreSeats && (
                 <div className="warning">
-                  Note: For a more optimal and fair election, you should have
-                  at least {suggestedSeats} candidates between available
-                  lists.
+                  Note: For a more optimal and fair election, you should have at
+                  least {suggestedSeats} candidates between available lists.
                 </div>
               )}
               <div className="error">

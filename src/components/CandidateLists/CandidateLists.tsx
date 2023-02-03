@@ -48,11 +48,12 @@ import {
   ListItem,
   ListMember,
   Items,
-  Gender,
   genderArray,
-  GenderPlurals,
+  GenderEnum,
+  ListData,
+  ListDataItem,
 } from "../../types";
-import { dHondt } from "src/utilities/worksCouncils";
+
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -151,10 +152,8 @@ interface Props {
   columns?: number;
   containerStyle?: React.CSSProperties;
   coordinateGetter?: KeyboardCoordinateGetter;
-  genderQuota: Tally;
-  minorityGender?: GenderPlurals;
-  seatDistribution?: Tally;
-  workplaceGenderTally?: Record<GenderPlurals, number> 
+  listData: ListData;
+  minorityGender?: GenderEnum;
   getItemStyles?(args: {
     value: UniqueIdentifier;
     index: number;
@@ -235,10 +234,8 @@ export function CandidateLists({
   handle = false,
   items: initialItems,
   containerStyle,
-  genderQuota,
-  seatDistribution,
   minorityGender,
-  workplaceGenderTally,
+  listData,
   coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
@@ -260,7 +257,7 @@ export function CandidateLists({
           name: "Solidarity",
           members: createRange(itemCount, (index) => ({
             id: `S.${index + 1}`,
-            gender: Gender.woman,
+            gender: GenderEnum.man,
           })),
           votes: 0,
         },
@@ -268,7 +265,7 @@ export function CandidateLists({
           name: "Solidarity 1",
           members: createRange(itemCount, (index) => ({
             id: `S1.${index + 1}`,
-            gender: Gender.woman,
+            gender: GenderEnum.woman,
           })),
           votes: 0,
         },
@@ -529,7 +526,7 @@ export function CandidateLists({
               },
               [newContainerId]: {
                 name: `List ${active.id}`,
-                members: [{ id: active.id, gender: Gender.woman }],
+                members: [{ id: active.id, gender: GenderEnum.woman }],
                 votes: 0,
               },
             }));
@@ -582,16 +579,13 @@ export function CandidateLists({
         >
           {containers.map((containerId) => {
             const container = items[containerId];
-            const listDistribution = seatDistribution && seatDistribution[containerId];
-            const genderRatio = workplaceGenderTally && dHondt(workplaceGenderTally, container.members.length)
-            console.log({genderRatio})
-            let isGenderRatioValid = null;
-
-            if(genderRatio && minorityGender) {
-              isGenderRatioValid = Boolean(genderRatio[minorityGender] >= genderQuota[minorityGender])
-              console.log({isGenderRatioValid})
+            let data: ListDataItem | null = null;
+            if(listData || listData[containerId]) {
+              data = listData[containerId];
             }
-            return  (
+    
+
+            return (
               <DroppableContainer
                 key={containerId}
                 id={containerId}
@@ -604,16 +598,12 @@ export function CandidateLists({
                 onRemove={() => handleRemoveColumn(containerId)}
                 onRenameList={(name) => handleRenameList(containerId, name)}
               >
-                <SortableContext
-                  items={container.members}
-                  strategy={strategy}
-                >
+                <SortableContext items={container.members} strategy={strategy}>
                   {container.members.map((member, index) => {
-                    if(listDistribution && index < listDistribution) {
-                      member.elected = true
-                    }
-                    else {
-                      member.elected = false
+                    if (data && data.listDistribution && index < data.listDistribution) {
+                      member.elected = true;
+                    } else {
+                      member.elected = false;
                     }
                     return (
                       <SortableItem
@@ -642,7 +632,11 @@ export function CandidateLists({
                   })}
                   <Container
                     placeholder
-                    style={{ minWidth: "inherit", width: "100%", minHeight: 100 }}
+                    style={{
+                      minWidth: "inherit",
+                      width: "100%",
+                      minHeight: 100,
+                    }}
                     onClick={() => handleAddItem(containerId)}
                   >
                     + Add Member
@@ -665,7 +659,7 @@ export function CandidateLists({
                           })}
                         </div>
                       )}
-  
+
                       <ListVotesForm
                         onChange={(value) => {
                           setItems((items) => {
@@ -677,19 +671,31 @@ export function CandidateLists({
                         }}
                         list={items[containerId]}
                       />
-                      {listDistribution ? (
+                      {data && data.listDistribution ? (
                         <div className="table">
                           <div className="input-control">
                             <label>Seat Distribution (raw)</label>
+                            <span className="cell">{data.listDistribution}</span>
+                          </div>
+                          <div className="input-control">
+                            <label>List Size Gender Ratio</label>
                             <span className="cell">
-                              {listDistribution}
+                              {JSON.stringify(data.listSizeGenderRatio, null, 2)}
                             </span>
                           </div>
                           <div className="input-control">
-                            <label htmlFor="listGenderQuota">Gender Quota</label>
+                            <label>List Size Gender Ratio</label>
+                            <span className="cell">
+                              {JSON.stringify(data.listSizeGenderRatio, null, 2)}
+                            </span>
+                          </div>
+                          <div className="input-control">
+                            <label htmlFor="listGenderQuota">
+                              Gender Quota
+                            </label>
                             <span id="listGenderQuota" className="cell">
-                              {(isGenderRatioValid === true) && 'valid'}
-                              {(isGenderRatioValid === false) && 'invalid'}
+                              {data.isGenderRatioValid === true && "valid"}
+                              {data.isGenderRatioValid === false && "invalid"}
                             </span>
                           </div>
                         </div>
@@ -702,9 +708,8 @@ export function CandidateLists({
                   )}
                 </SortableContext>
               </DroppableContainer>
-            )
-          }
-         )}
+            );
+          })}
           {minimal ? undefined : (
             <div>
               {isNewList ? (
@@ -878,7 +883,7 @@ export function CandidateLists({
     setItems((items) => {
       items[containerId].members.push({
         id: `${containerId}.${items[containerId].members.length + 1}`,
-        gender: Gender.woman,
+        gender: GenderEnum.woman,
       });
       return {
         ...items,

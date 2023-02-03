@@ -1,23 +1,28 @@
 import type { UniqueIdentifier } from "@dnd-kit/core";
 export type Tally = Record<string, number>;
 
-export enum Gender {
-  man = "man",
-  woman = "woman",
-  nonbinary = "nonbinary",
-}
 
-export enum GenderPlurals {
+export enum GenderEnum {
   man = "Men",
   woman = "Women",
   nonbinary = "NonBinary",
 }
 
-export const genderArray = [Gender.man, Gender.woman, Gender.nonbinary];
+export const genderArray = [
+  GenderEnum.man,
+  GenderEnum.woman,
+  GenderEnum.nonbinary,
+];
+
+export const SingularGenders = {
+    [GenderEnum.man]: "Man",
+    [GenderEnum.woman]: "Woman",
+    [GenderEnum.nonbinary]: "NonBinary Person",
+}
 
 export type ListMember = {
   id: UniqueIdentifier;
-  gender: Gender;
+  gender: GenderEnum;
   elected?: boolean;
 };
 
@@ -25,6 +30,17 @@ export type ListItem = {
   name: string;
   members: ListMember[];
   votes: number;
+};
+
+export type ListDataItem = {
+  electedListGenderTally: Record<GenderEnum, number>;
+  listDistribution: number;
+  listSizeGenderRatio: Tally | 0;
+  isGenderRatioValid: boolean | null;
+};
+
+export type ListData = {
+  [id: string]: ListDataItem;
 };
 
 export type Items = Record<UniqueIdentifier, ListItem>;
