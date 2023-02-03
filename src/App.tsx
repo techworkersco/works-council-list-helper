@@ -253,14 +253,6 @@ function App() {
                 </div>
               )}
             </div>
-            <div className="input-control">
-              <label htmlFor="totalVotes">
-                Seat distribution (using dhondt method)
-              </label>
-              <span className="cell">
-                {JSON.stringify(seatDistribution, null, 2)}
-              </span>
-            </div>
           </form>
           {!notEnoughSeats &&
             suggestMoreSeats &&
