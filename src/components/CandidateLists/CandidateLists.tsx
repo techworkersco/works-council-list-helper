@@ -44,7 +44,6 @@ import { SortableItem, ItemContent } from "../SortableItem/SortableItem";
 import styles from "./CandidateLists.module.css";
 
 import {
-  Tally,
   ListItem,
   ListMember,
   Items,
