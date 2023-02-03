@@ -183,15 +183,26 @@ function App() {
   const actions = { setNumMen, setNumWomen, setNumNonBinary };
   let minorityGender: undefined | GenderEnum;
 
-  if (totalWorkers > 3) {
-    minorityGender = numMen < numWomen ? GenderEnum.man : GenderEnum.woman;
-  }
-
-  const workplaceGenderTally = {
+  const workplaceGenderTally: Record<GenderEnum, number> = {
     [GenderEnum.man]: numMen,
     [GenderEnum.woman]: numWomen,
-    [GenderEnum.nonbinary]: 0,
+    [GenderEnum.nonbinary]: numNonBinary,
   };
+
+  if (totalWorkers > 3) {
+    let greatestCount = 0;
+    Object.entries(workplaceGenderTally)
+      .filter(([_, count]) => count > 0)
+      .forEach(([gender, count]) => {
+        if (count > greatestCount) {
+          greatestCount = count;
+        } else {
+          minorityGender = gender as GenderEnum;
+        }
+      });
+  }
+
+  console.log({ minorityGender })
 
   const genderQuota = dHondt(workplaceGenderTally, worksCouncilSize);
 
