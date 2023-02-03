@@ -7,7 +7,7 @@ import { Button, Item } from "../";
 import { ItemProps } from "../Item";
 
 import { getColor } from "../../utilities/getColor";
-import { ListMember, genderArray } from "../../types";
+import { ListMember, genderArray, SingularGenders } from "../../types";
 import { Edit } from "../Item/components";
 
 interface SortableItemProps {
@@ -27,6 +27,7 @@ interface SortableItemProps {
 
 
 const styles = { display: "block" };
+
 
 export function ItemForm({
   member,
@@ -53,7 +54,7 @@ export function ItemForm({
             }}
             key={member.id + gender}
           >
-            {gender}
+            {SingularGenders[gender]}
           </Button>
         ))}
       </div>
@@ -73,7 +74,7 @@ export function ItemContent({
   return (
     <div>
       <div>
-        {member.id} <i>{member.gender}</i>
+        {member.id} <i>{SingularGenders[member.gender]}</i>
       </div>
       {isEditing && <ItemForm member={member} onChangeItem={onChangeItem} />}
     </div>

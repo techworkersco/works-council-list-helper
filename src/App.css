@@ -20,11 +20,13 @@ h3 {
 }
 
 form, .table {
-  display: table;
+  display: flex;
+  flex-direction: column;
 }
 
 .input-control {
-  display: table-row;
+  display: flex;
+  flex-direction: row;
 }
 
 .input-control > label,
@@ -34,24 +36,20 @@ form, .table {
 .input-control > .cell {
   padding: 6px;
   margin: 6px;
-  display: table-cell;
+  display: flex;
+  /* flex-direction: column; */
 }
 
 .input-control > label {
   text-align: right;
   font-weight: 400;
+  width: 220px;
 }
 
 @media (max-width: 650px) {
-  .input-control > label,
-  .input-control > input,
-  .input-control > .error,
-  .input-control > .cell,
-  .input-control > .warning   {
-    display: block;
-  }
-  .input-control > label {
-    text-align: left;
+  form, .table {
+    display: flex;
+    flex-direction: column;
   }
 }
 

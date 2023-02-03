@@ -4,7 +4,7 @@ import { CandidateLists } from "./components/CandidateLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 
 import { dHondt, getNumSeats } from "./utilities/worksCouncils";
-import { Tally, GenderEnum, Items, ListData } from "./types";
+import { Tally, GenderEnum, Items, ListData, Tdata } from "./types";
 
 // const debounce = (fn: Function, delay: number) => {
 //   let timeout = -1;
@@ -54,16 +54,6 @@ const NumWorkers = ({
   );
 };
 
-type Tdata = {
-  numWomen: number;
-  numMen: number;
-  numNonBinary: number;
-  totalWorkers: number;
-  worksCouncilSize: number;
-  minorityGender: GenderEnum;
-  genderQuota: Record<GenderEnum, number>;
-  isGenderQuotaAchieved: boolean;
-};
 type Tactions = {
   setNumWomen: (num: number) => void;
   setNumMen: (num: number) => void;
@@ -71,7 +61,18 @@ type Tactions = {
 };
 
 function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
-  const { totalWorkers, worksCouncilSize, minorityGender, genderQuota } = data;
+  const {
+    totalWorkers,
+    worksCouncilSize,
+    minorityGender,
+    genderQuota,
+    candidateSeatCount,
+    notEnoughSeats,
+    moreVotesThanWorkers,
+    suggestMoreSeats,
+    suggestedSeats,
+    totalVotes,
+  } = data;
   const minorityGenderHasMembers = data[`num${minorityGender}`] > 0;
   console.log({ genderQuota });
   return (
@@ -125,6 +126,31 @@ function WorkplaceForm({ actions, data }: { data: Tdata; actions: Tactions }) {
           </div>
         </div>
       )}
+      <div className="input-control">
+        <label htmlFor="totalVotes">Total Candidates</label>
+        <span className="cell">{candidateSeatCount}</span>
+        {!notEnoughSeats && suggestMoreSeats && (
+          <div className="warning">
+            Note: For a more optimal and fair election, you should have at least{" "}
+            {suggestedSeats} candidates between available lists.
+          </div>
+        )}
+        <div className="error">
+          {notEnoughSeats &&
+            `Note: You don't have enough choices (${candidateSeatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
+        </div>
+      </div>
+      {!!totalWorkers && (
+        <div className="input-control">
+          <label htmlFor="totalVotes">Total Votes</label>
+          <span className="cell">{totalVotes}</span>
+          {moreVotesThanWorkers && (
+            <div className="error">
+              You have more votes ({totalVotes}) than workers ({totalWorkers})
+            </div>
+          )}
+        </div>
+      )}
     </form>
   );
 }
@@ -158,8 +184,7 @@ function App() {
   let minorityGender: undefined | GenderEnum;
 
   if (totalWorkers > 3) {
-    minorityGender =
-      numMen < numWomen ? GenderEnum.man : GenderEnum.woman;
+    minorityGender = numMen < numWomen ? GenderEnum.man : GenderEnum.woman;
   }
 
   const workplaceGenderTally = {
@@ -256,6 +281,12 @@ function App() {
     minorityGender,
     genderQuota,
     isGenderQuotaAchieved,
+    candidateSeatCount,
+    notEnoughSeats,
+    suggestMoreSeats,
+    moreVotesThanWorkers,
+    suggestedSeats,
+    totalVotes,
   } as Tdata;
 
   return (
@@ -282,6 +313,7 @@ function App() {
       <CandidateLists
         columns={1}
         strategy={rectSortingStrategy}
+        data={data}
         handle
         onChange={setLists}
         minorityGender={minorityGender}
@@ -296,32 +328,7 @@ function App() {
       />
       {totalWorkers > 0 && (
         <>
-          <form>
-            <div className="input-control">
-              <label htmlFor="totalVotes">Total Candidates</label>
-              <span className="cell">{candidateSeatCount}</span>
-              {!notEnoughSeats && suggestMoreSeats && (
-                <div className="warning">
-                  Note: For a more optimal and fair election, you should have at
-                  least {suggestedSeats} candidates between available lists.
-                </div>
-              )}
-              <div className="error">
-                {notEnoughSeats &&
-                  `Note: You don't have enough choices (${candidateSeatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
-              </div>
-            </div>
-            <div className="input-control">
-              <label htmlFor="totalVotes">Total Votes</label>
-              <span className="cell">{totalVotes}</span>
-              {moreVotesThanWorkers && (
-                <div className="error">
-                  You have more votes ({totalVotes}) than workers (
-                  {totalWorkers})
-                </div>
-              )}
-            </div>
-          </form>
+          <div className="form"></div>
         </>
       )}
     </div>

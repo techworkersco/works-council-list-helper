@@ -51,8 +51,9 @@ import {
   GenderEnum,
   ListData,
   ListDataItem,
+  Tdata,
 } from "../../types";
-
+import classNames from "classnames";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -151,6 +152,7 @@ interface Props {
   columns?: number;
   containerStyle?: React.CSSProperties;
   coordinateGetter?: KeyboardCoordinateGetter;
+  data: Tdata;
   listData: ListData;
   minorityGender?: GenderEnum;
   getItemStyles?(args: {
@@ -205,23 +207,22 @@ type ListVotesFormProps = {
 
 function ListVotesForm({ list, onChange }: ListVotesFormProps) {
   return (
-    <form>
-      <div className="input-control">
-        <label htmlFor="votes">Votes</label>
+    <div className="input-control">
+      <label htmlFor="votes">Votes</label>
 
-        <input
-          id="votes"
-          type="number"
-          min={0}
-          defaultValue={list.votes}
-          onChange={(e) =>
-            onChange &&
-            e.target.value?.length &&
-            onChange(parseInt(e.target.value))
-          }
-        />
-      </div>
-    </form>
+      <input
+        type="number"
+        min={0}
+        defaultValue={list.votes}
+        tabIndex={0}
+        style={{ width: 60 }}
+        onChange={(e) =>
+          onChange &&
+          e.target.value?.length &&
+          onChange(parseInt(e.target.value))
+        }
+      />
+    </div>
   );
 }
 
@@ -234,6 +235,7 @@ export function CandidateLists({
   items: initialItems,
   containerStyle,
   minorityGender,
+  data: globalData,
   listData,
   coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
@@ -253,17 +255,17 @@ export function CandidateLists({
     () =>
       initialItems ?? {
         S: {
-          name: "Solidarity",
+          name: "Brolidarity",
           members: createRange(itemCount, (index) => ({
-            id: `S.${index + 1}`,
+            id: `B.${index + 1}`,
             gender: GenderEnum.man,
           })),
           votes: 0,
         },
         S1: {
-          name: "Solidarity 1",
+          name: "Solidarity",
           members: createRange(itemCount, (index) => ({
-            id: `S1.${index + 1}`,
+            id: `S.${index + 1}`,
             gender: GenderEnum.woman,
           })),
           votes: 0,
@@ -579,10 +581,9 @@ export function CandidateLists({
           {containers.map((containerId) => {
             const container = items[containerId];
             let data: ListDataItem | null = null;
-            if(listData || listData[containerId]) {
+            if (listData || listData[containerId]) {
               data = listData[containerId];
             }
-    
 
             return (
               <DroppableContainer
@@ -599,7 +600,11 @@ export function CandidateLists({
               >
                 <SortableContext items={container.members} strategy={strategy}>
                   {container.members.map((member, index) => {
-                    if (data && data.listDistribution && index < data.listDistribution) {
+                    if (
+                      data &&
+                      data.listDistribution &&
+                      index < data.listDistribution
+                    ) {
                       member.elected = true;
                     } else {
                       member.elected = false;
@@ -641,67 +646,74 @@ export function CandidateLists({
                     + Add Member
                   </Container>
                   {container.members.length ? (
-                    <>
-                      {minorityGender && (
-                        <div className={styles.ListStats}>
-                          {genderArray.map((gender) => {
-                            return (
-                              <span key={containerId + gender}>
-                                {gender}:{" "}
-                                {
-                                  items[containerId].members.filter(
-                                    (m) => m.gender === gender
-                                  ).length
-                                }
-                              </span>
-                            );
-                          })}
-                        </div>
-                      )}
+                    <Container>
+                      <div className={classNames("form", styles.ListFooter)}>
+                        {minorityGender && (
+                          <div className="input-control">
+                            <label>Gender Distribution</label>
+                            <div className={classNames(styles.ListStats, 'cell')}>
+                              {genderArray.map((gender) => {
+                                return (
+                                  <span key={containerId + gender}>
+                                    {gender[0].toLocaleLowerCase()}:&nbsp;
+                                    {
+                                      items[containerId].members.filter(
+                                        (m) => m.gender === gender
+                                      ).length
+                                    }
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
 
-                      <ListVotesForm
-                        onChange={(value) => {
-                          setItems((items) => {
-                            items[containerId].votes = value;
-                            // just copying the object here is enough to
-                            // bind the change
-                            return { ...items };
-                          });
-                        }}
-                        list={items[containerId]}
-                      />
-                      {data && data.listDistribution ? (
-                        <div className="table">
-                          <div className="input-control">
-                            <label>Seat Distribution (raw)</label>
-                            <span className="cell">{data.listDistribution}</span>
-                          </div>
-                          <div className="input-control">
-                            <label>List Size Gender Ratio</label>
-                            <span className="cell">
-                              {JSON.stringify(data.listSizeGenderRatio, null, 2)}
-                            </span>
-                          </div>
-                          <div className="input-control">
-                            <label>List Size Gender Ratio</label>
-                            <span className="cell">
-                              {JSON.stringify(data.listSizeGenderRatio, null, 2)}
-                            </span>
-                          </div>
-                          <div className="input-control">
-                            <label htmlFor="listGenderQuota">
-                              Gender Quota
-                            </label>
-                            <span id="listGenderQuota" className="cell">
-                              {data.isGenderRatioValid === true && "valid"}
-                              {data.isGenderRatioValid === false && "invalid"}
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </>
+                        {globalData.totalWorkers > 0 && (
+                          <ListVotesForm
+                            onChange={(value) => {
+                              setItems((items) => {
+                                items[containerId].votes = value;
+                                // just copying the object here is enough to
+                                // bind the change
+                                return { ...items };
+                              });
+                            }}
+                            list={items[containerId]}
+                          />
+                        )}
+                        {data && data.listDistribution ? (
+                          <>
+                            <div className="input-control">
+                              <label>Seat Distribution (raw)</label>
+                              <span className="cell">
+                                {data.listDistribution}
+                              </span>
+                            </div>
+                            <div className="input-control">
+                              <label>List Size Gender Ratio</label>
+                              <span className="cell">
+                                {JSON.stringify(
+                                  data.listSizeGenderRatio,
+                                  null,
+                                  2
+                                )}
+                              </span>
+                            </div>
+                            <div className="input-control">
+                              <label htmlFor="listGenderQuota">
+                                Gender Quota
+                              </label>
+                              <span id="listGenderQuota" className="cell">
+                                {data.isGenderRatioValid === true && "valid"}
+                                {data.isGenderRatioValid === false && "invalid"}
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    </Container>
                   ) : (
                     ""
                   )}

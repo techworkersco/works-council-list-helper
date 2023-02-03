@@ -1,5 +1,23 @@
 .ListStats {
     span {
-        padding: 6px;
+        padding: 3px;
+        display: flex;
     }
+}
+
+.ListFooter {
+    label {
+        width: 200px;
+    }
+    /* label {
+        background-color: white;
+    } */
+    /* .input-control {
+        margin: 4px;
+    } */
+
+    /* .input-control > label {
+        background-color: white;
+        color: black;
+    } */
 }
