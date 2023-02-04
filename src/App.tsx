@@ -2,6 +2,7 @@ import "./App.css";
 import { useState } from "react";
 import { CandidateLists } from "./components/CandidateLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
+import useSessionState from 'use-session-storage-state'
 
 import { dHondt, getNumSeats } from "./utilities/worksCouncils";
 import { Tally, GenderEnum, Items, ListData, Tdata } from "./types";
@@ -160,9 +161,9 @@ enum ListDisplay {
   horizontal,
 }
 function App() {
-  const [numWomen, setNumWomen] = useState(0);
-  const [numMen, setNumMen] = useState(0);
-  const [numNonBinary, setNumNonBinary] = useState(0);
+  const [numWomen, setNumWomen] = useSessionState('numWomen', { defaultValue: 0 });
+  const [numMen, setNumMen] = useSessionState('numNen', { defaultValue: 0 })
+  const [numNonBinary, setNumNonBinary] = useSessionState('numNonBinary', { defaultValue: 0 });
   const [lists, setLists] = useState<Items>({});
   const totalWorkers = numWomen + numMen + numNonBinary;
   const worksCouncilSize = getNumSeats(totalWorkers);
@@ -190,16 +191,7 @@ function App() {
   };
 
   if (totalWorkers > 3) {
-    let greatestCount = 0;
-    Object.entries(workplaceGenderTally)
-      .filter(([_, count]) => count > 0)
-      .forEach(([gender, count]) => {
-        if (count > greatestCount) {
-          greatestCount = count;
-        } else {
-          minorityGender = gender as GenderEnum;
-        }
-      });
+    minorityGender = numMen > numWomen ? GenderEnum.woman : GenderEnum.man
   }
 
   console.log({ minorityGender, seatDistribution })

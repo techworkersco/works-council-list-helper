@@ -41,15 +41,28 @@ form, .table {
 }
 
 .input-control > label {
-  text-align: right;
+  /* text-align: right; */
   font-weight: 400;
   width: 220px;
 }
 
 @media (max-width: 650px) {
-  form, .table {
+  /* form, .table {
     display: flex;
     flex-direction: column;
+  } */
+
+  .input-control {
+    display: flex;
+    flex-direction: column;
+    & > label {
+      width: 100%;
+    }
+  }
+  form { 
+    label {
+      width: 100%;
+    }
   }
 }
 

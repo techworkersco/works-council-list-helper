@@ -54,6 +54,7 @@ import {
   Tdata,
 } from "../../types";
 import classNames from "classnames";
+import useSessionStorageState from "use-session-storage-state";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -252,30 +253,29 @@ export function CandidateLists({
 }: Props) {
   // TODO: use zustand instead of use state below.
   // const { lists } = useListStore();
-  const [items, setItems] = useState<Items>(
-    () =>
-      initialItems ?? {
-        S: {
-          name: "Brolidarity",
-          members: createRange(itemCount, (index) => ({
-            id: `B.${index + 1}`,
-            gender: GenderEnum.man,
-          })),
-          votes: 0,
-        },
-        S1: {
-          name: "Solidarity",
-          members: createRange(itemCount, (index) => ({
-            id: `S.${index + 1}`,
-            gender: GenderEnum.woman,
-          })),
-          votes: 0,
-        },
-      }
-  );
-  const [containers, setContainers] = useState(
-    Object.keys(items) as UniqueIdentifier[]
-  );
+  const [items, setItems] = useSessionStorageState<Items>("items", {
+    defaultValue: initialItems ?? {
+      S: {
+        name: "Brolidarity",
+        members: createRange(itemCount, (index) => ({
+          id: `B.${index + 1}`,
+          gender: GenderEnum.man,
+        })),
+        votes: 0,
+      },
+      S1: {
+        name: "Solidarity",
+        members: createRange(itemCount, (index) => ({
+          id: `S.${index + 1}`,
+          gender: GenderEnum.woman,
+        })),
+        votes: 0,
+      },
+    },
+  });
+  const [containers, setContainers] = useSessionStorageState("listOrder", {
+    defaultValue: Object.keys(items) as UniqueIdentifier[],
+  });
   const [newList, setNewList] = useState<undefined | string>();
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [isNewList, setIsNewList] = useState<undefined | true>();
@@ -645,7 +645,7 @@ export function CandidateLists({
                     + Add Member
                   </Container>
                   {container.members.length ? (
-                    <Container>
+                    <div>
                       <div className={classNames("form", styles.ListFooter)}>
                         {minorityGender && (
                           <div className="input-control">
@@ -700,21 +700,24 @@ export function CandidateLists({
                                 )}
                               </span>
                             </div> */}
-                            {minorityGender && <div className="input-control">
-                              <label htmlFor="listGenderQuota">
-                                Gender Quota
-                              </label>
-                              <span id="listGenderQuota" className="cell">
-                                {data.isGenderRatioValid === true && "valid"}
-                                {data.isGenderRatioValid === false && "invalid"}
-                              </span>
-                            </div>}
+                            {minorityGender && (
+                              <div className="input-control">
+                                <label htmlFor="listGenderQuota">
+                                  Gender Quota
+                                </label>
+                                <span id="listGenderQuota" className="cell">
+                                  {data.isGenderRatioValid === true && "valid"}
+                                  {data.isGenderRatioValid === false &&
+                                    "invalid"}
+                                </span>
+                              </div>
+                            )}
                           </>
                         ) : (
                           ""
                         )}
                       </div>
-                    </Container>
+                    </div>
                   ) : (
                     ""
                   )}

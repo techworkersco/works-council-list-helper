@@ -84,6 +84,7 @@ specifiers:
   terser-webpack-plugin: ^5.2.5
   ts-node: ^10.9.1
   typescript: ^4.9.4
+  use-session-storage-state: ^18.1.1
   web-vitals: ^2.1.4
   webpack: ^5.64.4
   webpack-dev-server: ^4.6.0
@@ -185,6 +186,7 @@ dependencies:
   terser-webpack-plugin: 5.3.6_webpack@5.75.0
   ts-node: 10.9.1_zpb5kzpnyozdjq4cwaojlul57u
   typescript: 4.9.4
+  use-session-storage-state: 18.1.1_biqbaboplfbrettd7655fr4n2y
   web-vitals: 2.1.4
   webpack: 5.75.0
   webpack-dev-server: 4.11.1_webpack@5.75.0
@@ -10867,6 +10869,17 @@ packages:
     resolution: {integrity: sha512-5vZjFlH9ofROmuWmXM9yj2wljYKgWstGwe8YTyiqM7hVum/g9LyCizPZtb3UqsuppVwety9QJmfc42VggLpTgg==}
     dependencies:
       braces: 3.0.2
+    dev: false
+
+  /use-session-storage-state/18.1.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-smeznwdz+7ClDng/9eDLt4Dh8Af8jRR1BqW0Ps6E998S/GZ8INoL73Qf0vb6UbvAAIs60FGstnyLmGz2AKEeWQ==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /use-sync-external-store/1.2.0_react@18.2.0:

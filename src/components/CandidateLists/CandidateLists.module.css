@@ -1,23 +1,37 @@
 .ListStats {
-    span {
-        padding: 3px;
-        display: flex;
-    }
+  span {
+    padding: 3px;
+    display: flex;
+  }
 }
 
 .ListFooter {
-    label {
-        width: 200px;
-    }
-    /* label {
+    font-size: 1rem;
+  label {
+    width: 140px;
+  }
+  /* label {
         background-color: white;
     } */
-    /* .input-control {
+  /* .input-control {
         margin: 4px;
     } */
 
-    /* .input-control > label {
+  /* .input-control > label {
         background-color: white;
         color: black;
     } */
+}
+
+@media (max-width: 650px) {
+  /* form, .table {
+      display: flex;
+      flex-direction: column;
+    } */
+
+  .ListFooter {
+    label {
+      width: 100%;
+    }
+  }
 }
