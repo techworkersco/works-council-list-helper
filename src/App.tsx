@@ -189,8 +189,9 @@ function App() {
     [GenderEnum.woman]: numWomen,
     [GenderEnum.nonbinary]: numNonBinary,
   };
-
-  if (totalWorkers > 3) {
+  // we only track minority gender when the works council is larger than 3 in size
+  // https://www.gesetze-im-internet.de/englisch_betrvg/englisch_betrvg.html#p0117
+  if (worksCouncilSize > 3) {
     minorityGender = numMen > numWomen ? GenderEnum.woman : GenderEnum.man
   }
 
