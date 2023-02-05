@@ -1,5 +1,8 @@
-import type { Tally } from '../types'
+import type { Tally } from "../types";
 
+/**
+ * Based on the law
+ */
 export const employeeThreshholds: Record<number, number> = {
   5: 0,
   21: 1,
@@ -22,6 +25,12 @@ export const employeeThreshholds: Record<number, number> = {
   9001: 35,
 };
 
+/**
+ * For a given number of employees
+ * return the amount of works council seats they should have
+ * @param numEmployees
+ * @returns {number}
+ */
 export function getNumSeats(numEmployees: number) {
   for (const limit in employeeThreshholds) {
     if (numEmployees < parseInt(limit)) {
@@ -32,17 +41,36 @@ export function getNumSeats(numEmployees: number) {
   return Math.ceil((numEmployees - 9000) / 3000) * 2 + 35;
 }
 
+/**
+ * (Currently unused)
+ *
+ * @param voterTally
+ * @param worksCouncilSize
+ * @param workforcePopulation
+ * @returns {Record<string, Tally>} (for now?)
+ */
 export function idealGenderQuota(
+  /**
+   * tally of popular votes by list - { lista: 12, listb: 2 }
+   */
   voterTally: Tally,
+  /**
+   * number of works council seats
+   */
   worksCouncilSize: number,
+  /**
+   * tally of workers by gender across the workplace
+   */
   workforcePopulation: Tally
 ) {
   const listResults = dHondt(voterTally, worksCouncilSize);
-  Object.entries(listResults).reduce<Tally>((obj, [k, v]) => {
-    // @ts-expect-error
-    obj[k] = dHondt(workforcePopulation, v);
-    return obj;
-  }, {});
+  return Object.entries(listResults).reduce<Record<string, Tally>>(
+    (obj, [listName, numListSeatsAllocated]) => {
+      obj[listName] = dHondt(workforcePopulation, numListSeatsAllocated);
+      return obj;
+    },
+    {}
+  );
 }
 /**
  * Use it to compute ideal ratios for gender equality, and for general list distribution.
@@ -54,20 +82,20 @@ export function idealGenderQuota(
 export function dHondt(workforcePopulation: Tally, seats: number): Tally {
   let dHondt_arrs: [string, number][] = [];
   for (let i = 0; i < seats; i++) {
-    for (const [k, v] of Object.entries(workforcePopulation)) {
-      if (v > 0) {
-        dHondt_arrs.push([k, v / i]);
+    for (const [segment, count] of Object.entries(workforcePopulation)) {
+      if (count > 0) {
+        dHondt_arrs.push([segment, count / i]);
       }
     }
   }
   return dHondt_arrs
     .sort((a, b) => b[1] - a[1])
     .slice(0, seats)
-    .reduce<Tally>((obj, [k]) => {
-      if (!obj[k]) {
-        obj[k] = 0;
+    .reduce<Tally>((obj, [segment]) => {
+      if (!obj[segment]) {
+        obj[segment] = 0;
       }
-      obj[k]++;
+      obj[segment]++;
       return obj;
     }, {});
 }

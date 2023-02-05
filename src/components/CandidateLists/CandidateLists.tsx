@@ -51,7 +51,6 @@ import {
   GenderEnum,
   ListData,
   ListDataItem,
-  Tdata,
 } from "../../types";
 import classNames from "classnames";
 import useSessionStorageState from "use-session-storage-state";
@@ -153,7 +152,7 @@ interface Props {
   columns?: number;
   containerStyle?: React.CSSProperties;
   coordinateGetter?: KeyboardCoordinateGetter;
-  data: Tdata;
+  data: { totalWorkers: number };
   listData: ListData;
   minorityGender?: GenderEnum;
   getItemStyles?(args: {
