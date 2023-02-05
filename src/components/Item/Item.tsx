@@ -23,7 +23,7 @@ export interface Props {
   style?: React.CSSProperties;
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
-  value: React.ReactNode;
+  value: React.ReactElement;
   onRemove?(): void;
   renderItem?(args: {
     dragOverlay: boolean;
@@ -36,13 +36,13 @@ export interface Props {
     style: React.CSSProperties | undefined;
     transform: Props["transform"];
     transition: Props["transition"];
-    value: Props["value"];
+    value: React.ReactElement;
   }): React.ReactElement;
   renderActions?(args: {
     dragging?: boolean;
     sorting?: boolean;
     index?: number;
-    value: Props["value"];
+    value: React.ReactElement;
   }): React.ReactElement;
 }
 
@@ -97,7 +97,7 @@ export const Item = React.memo(
           style,
           transform,
           transition,
-          value,
+          value
         })
       ) : (
         <li
@@ -147,14 +147,14 @@ export const Item = React.memo(
             tabIndex={!handle ? 0 : undefined}
           >
             {value}
-            <span className={styles.Actions}>
+            <div className={styles.Actions}>
               {(renderActions) &&
                 renderActions({ index, value, sorting, dragging })}
               {onRemove ? (
                 <Remove className={styles.Remove} onClick={onRemove} />
               ) : null}
               {handle ? <Handle {...handleProps} {...listeners} /> : null}
-            </span>
+            </div>
           </div>
         </li>
       );

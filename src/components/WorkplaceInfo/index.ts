@@ -1,0 +1,1 @@
+export { WorkplaceInfo } from './WorkplaceInfo'

@@ -1,5 +1,83 @@
 .App {
   text-align: left;
+  padding: 6px;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  filter: invert(90%);
+} */
+
+body.dark {
+  background-color: white;
+  filter: invert(90%);
+}
+
+h1,
+h2,
+h3 {
+  margin: 16px 0px;
+padding: 4px 0px;
+font-weight: normal;
+}
+
+form, .table {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-control {
+  display: flex;
+  flex-direction: row;
+}
+
+.input-control > label,
+.input-control > input,
+.input-control > .error,
+.input-control > .warning,
+.input-control > .cell {
+  padding: 6px;
+  margin: 6px;
+  display: flex;
+  /* flex-direction: column; */
+}
+
+.input-control > label {
+  /* text-align: right; */
+  font-weight: 400;
+  width: 220px;
+}
+
+@media (max-width: 650px) {
+  /* form, .table {
+    display: flex;
+    flex-direction: column;
+  } */
+
+  .input-control {
+    display: flex;
+    flex-direction: column;
+    & > label {
+      width: 100%;
+    }
+  }
+  form { 
+    label {
+      width: 100%;
+    }
+  }
+}
+
+form .input-control .error {
+  font-size: 1rem;
+  font-style: oblique;
+  color: red;
+}
+
+form .input-control .warning {
+  font-size: 1rem;
+  font-style: oblique;
+  color: #8f6b11;
+  background-color: lightyellow;
 }
 
 .App-logo {
@@ -23,6 +101,7 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
 
 .App-link {
   color: #61dafb;
