@@ -22,7 +22,6 @@ const NumWorkers = ({
         onChange={(e) => {
           const parsedValue = parseInt(e.target.value);
 
-          // e.preventDefault();
           if (e.target.value && e.target.value.length) {
             if (parsedValue !== value) {
               actions[`setNum${gender}`](parsedValue);

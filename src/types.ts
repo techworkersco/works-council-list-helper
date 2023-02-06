@@ -55,22 +55,6 @@ export type Tdata = {
   totalVotes: number;
 };
 
-export type WorkplaceData = {
-  totalWorkers: number;
-  worksCouncilSize: number;
-  minorityGender: GenderEnum | undefined;
-  workplaceGenderQuota: Tally;
-  candidateSeatCount: number;
-  notEnoughSeats: boolean;
-  moreVotesThanWorkers: boolean;
-  suggestMoreSeats: boolean;
-  suggestedSeats: number;
-  totalVotes: number;
-  numWomen: number;
-  numMen: number;
-  numNonBinary: number;
-}
-
 export type Tactions = {
   setNumWomen: (num: number) => void;
   setNumMen: (num: number) => void;

@@ -16,11 +16,12 @@ h1,
 h2,
 h3 {
   margin: 16px 0px;
-padding: 4px 0px;
-font-weight: normal;
+  padding: 4px 0px;
+  font-weight: normal;
 }
 
-form, .table {
+form,
+.table {
   display: flex;
   flex-direction: column;
 }
@@ -60,7 +61,7 @@ form, .table {
       width: 100%;
     }
   }
-  form { 
+  form {
     label {
       width: 100%;
     }

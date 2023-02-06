@@ -1,4 +1,11 @@
-import { Items, GenderEnum, Tally, ListData, ListItem, ListDataItem } from "../types";
+import {
+  Items,
+  GenderEnum,
+  Tally,
+  ListData,
+  ListItem,
+  ListDataItem,
+} from "../types";
 
 import { dHondt } from "./worksCouncils";
 
