@@ -632,19 +632,21 @@ export function CandidateLists({
                       />
                     );
                   })}
-                  <Container
-                    placeholder
-                    style={{
-                      minWidth: "inherit",
-                      width: "100%",
-                      minHeight: 100,
-                    }}
-                    onClick={() => handleAddItem(containerId)}
-                  >
-                    + Add Member
-                  </Container>
+                  <li key={containerId + '-add-member'}>
+                    <Container
+                      placeholder
+                      style={{
+                        minWidth: "inherit",
+                        width: "100%",
+                        minHeight: 100,
+                      }}
+                      onClick={() => handleAddItem(containerId)}
+                    >
+                      + Add Member
+                    </Container>
+                  </li>
                   {container.members.length ? (
-                    <div>
+                    <li key={containerId + '-summary'}>
                       <div className={classNames("form", styles.ListFooter)}>
                         {minorityGender && (
                           <div className="input-control">
@@ -716,7 +718,7 @@ export function CandidateLists({
                           ""
                         )}
                       </div>
-                    </div>
+                    </li>
                   ) : (
                     ""
                   )}
@@ -735,6 +737,7 @@ export function CandidateLists({
                       type="text"
                       minLength={3}
                       placeholder="List name"
+                      aria-label="New List name input"
                       security=""
                       tabIndex={0}
                       autoFocus
@@ -743,9 +746,10 @@ export function CandidateLists({
                   </div>
                   <div className="input-control">
                     <Button
-                      // @ts-ignore
-                      disabled={!newList || !newList.length}
+                      // @ts-expect-error
+                      disabled={Boolean(!newList || !newList?.length)}
                       tabIndex={0}
+                      aria-label="Create the new list"
                       onClick={() => {
                         if (newList) {
                           setNewList(undefined);
@@ -757,6 +761,7 @@ export function CandidateLists({
                       Create
                     </Button>
                     <Button
+                      aria-label="Cancel creating a new list"
                       onClick={() => {
                         setNewList(undefined);
                         setIsNewList(undefined);

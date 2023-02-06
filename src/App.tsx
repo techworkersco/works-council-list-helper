@@ -115,12 +115,14 @@ function App() {
       <h2>
         Candidate Lists{" "}
         <button
+          aria-label="toggle horizontal list display"
           onClick={() => setListDisplay(ListDisplay.horizontal)}
           disabled={listDisplay === ListDisplay.horizontal}
         >
           horizontal
         </button>
         <button
+          aria-label="Toggle vertical list display"
           onClick={() => setListDisplay(ListDisplay.vertical)}
           disabled={listDisplay === ListDisplay.vertical}
         >

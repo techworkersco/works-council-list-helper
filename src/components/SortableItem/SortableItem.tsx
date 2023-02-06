@@ -143,7 +143,7 @@ export function SortableItem({
       listeners={listeners}
       renderItem={renderItem}
       renderActions={() => (
-        <Edit isActive={isEditing} onClick={() => setEditing(!isEditing)} />
+        <Edit aria-label="Edit list item" isActive={isEditing} onClick={() => setEditing(!isEditing)} />
       )}
     />
   );

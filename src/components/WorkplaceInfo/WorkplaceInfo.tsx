@@ -17,6 +17,7 @@ const NumWorkers = ({
       <input
         tabIndex={0}
         min={0}
+        name={label}
         type="number"
         defaultValue={value}
         onChange={(e) => {
