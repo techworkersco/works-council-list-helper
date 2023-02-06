@@ -624,6 +624,7 @@ export function CandidateLists({
                         getIndex={getMemberIndex}
                         onChangeItem={(member) =>
                           setItems((items) => {
+                            console.log(member.gender)
                             items[containerId].members[index].gender =
                               member.gender;
                             return { ...items };
@@ -632,7 +633,7 @@ export function CandidateLists({
                       />
                     );
                   })}
-                  <li key={containerId + '-add-member'}>
+                  <li key={containerId + "-add-member"}>
                     <Container
                       placeholder
                       style={{
@@ -646,7 +647,7 @@ export function CandidateLists({
                     </Container>
                   </li>
                   {container.members.length ? (
-                    <li key={containerId + '-summary'}>
+                    <li key={containerId + "-summary"}>
                       <div className={classNames("form", styles.ListFooter)}>
                         {minorityGender && (
                           <div className="input-control">
@@ -691,16 +692,6 @@ export function CandidateLists({
                                 {data.listDistribution}
                               </span>
                             </div>
-                            {/* <div className="input-control">
-                              <label>List Size Gender Ratio</label>
-                              <span className="cell">
-                                {JSON.stringify(
-                                  data.listGenderRatio,
-                                  null,
-                                  2
-                                )}
-                              </span>
-                            </div> */}
                             {minorityGender && (
                               <div className="input-control">
                                 <label htmlFor="listGenderQuota">

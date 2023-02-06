@@ -118,7 +118,7 @@ export function WorkplaceInfo({
         )}
         <div className="error">
           {notEnoughSeats &&
-            `Note: You don't have enough choices (${candidateSeatCount}) between the lists above to form the ${worksCouncilSize} person works council board`}
+            `Note: You don't have enough choices (${candidateSeatCount}) between the lists below to form the ${worksCouncilSize} person works council board`}
         </div>
       </div>
       {!!totalWorkers && (

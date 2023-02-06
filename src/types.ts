@@ -16,7 +16,7 @@ export const genderArray = [
 export const SingularGenders = {
     [GenderEnum.man]: "Man",
     [GenderEnum.woman]: "Woman",
-    [GenderEnum.nonbinary]: "Non-Binary Person",
+    [GenderEnum.nonbinary]: "Non-Binary",
 }
 
 export type ListMember = {

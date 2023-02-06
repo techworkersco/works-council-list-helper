@@ -6,7 +6,7 @@ import useSessionState from "use-session-storage-state";
 
 import { dHondt, getNumSeats } from "./lib/worksCouncils";
 import { Tally, GenderEnum, Items, Tdata } from "./types";
-import { sumValues, sumValuesByProp } from "./utilities/sumValues";
+import { sumValues } from "./utilities/sumValues";
 import { pluck } from "./utilities/pluck";
 import { WorkplaceInfo } from "./components/WorkplaceInfo";
 import { tallyAndValidateLists } from "./lib/listData";
@@ -47,12 +47,14 @@ function App() {
   // we only track minority gender when the works council is larger than 3 in size
   // https://www.gesetze-im-internet.de/englisch_betrvg/englisch_betrvg.html#p0117
   if (worksCouncilSize > 3) {
-    minorityGender = numMen > numWomen ? GenderEnum.woman : GenderEnum.man;
+    minorityGender = numMen >= numWomen ? GenderEnum.woman : GenderEnum.man;
   }
 
   const workplaceGenderQuota = dHondt(workplaceGenderTally, worksCouncilSize);
 
-  const candidateSeatCount = sumValuesByProp(lists, "members.length");
+  const candidateSeatCount = Object.values(lists).reduce((total, list) => {
+    return total + (list.members.length ?? 0);
+  }, 0);
 
   const notEnoughSeats = candidateSeatCount < worksCouncilSize;
   const suggestedSeats = worksCouncilSize * 2;
