@@ -16,10 +16,10 @@ function tallyAndValidateList(
   seatDistribution: Tally,
   minorityGender?: GenderEnum
 ): ListDataItem {
-  const electedListGenderTally: Record<GenderEnum, number> = list.members
+  const popularListGenderTally: Record<GenderEnum, number> = list.members
     .filter((m) => m.elected)
     .reduce(
-      (tally, member, index) => {
+      (tally, member) => {
         if (tally[member.gender] === undefined) {
           tally[member.gender] = 0;
         }
@@ -34,23 +34,23 @@ function tallyAndValidateList(
     );
 
   const listDistribution = seatDistribution && seatDistribution[listId];
-  const listSizeGenderRatio =
+  const listGenderRatio =
     workplaceGenderTally &&
     listDistribution &&
     dHondt(workplaceGenderTally, listDistribution);
 
   let isGenderRatioValid = null;
 
-  if (listSizeGenderRatio && minorityGender) {
+  if (listGenderRatio && minorityGender) {
     isGenderRatioValid = Boolean(
-      electedListGenderTally[minorityGender] >=
-        listSizeGenderRatio[minorityGender]
+      popularListGenderTally[minorityGender] >=
+        listGenderRatio[minorityGender]
     );
   }
   return {
-    electedListGenderTally,
+    popularListGenderTally,
     listDistribution,
-    listSizeGenderRatio,
+    listGenderRatio,
     isGenderRatioValid,
   };
 }

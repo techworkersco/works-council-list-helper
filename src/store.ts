@@ -1,6 +1,9 @@
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+/**
+ * TODO: this file (and zustand) is not used yet!
+ */
 
 enum Genders {
   man = "man",

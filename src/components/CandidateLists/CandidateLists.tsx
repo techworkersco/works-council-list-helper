@@ -693,7 +693,7 @@ export function CandidateLists({
                               <label>List Size Gender Ratio</label>
                               <span className="cell">
                                 {JSON.stringify(
-                                  data.listSizeGenderRatio,
+                                  data.listGenderRatio,
                                   null,
                                   2
                                 )}

@@ -32,9 +32,9 @@ export type ListItem = {
 };
 
 export type ListDataItem = {
-  electedListGenderTally: Record<GenderEnum, number>;
+  popularListGenderTally: Record<GenderEnum, number>;
   listDistribution: number;
-  listSizeGenderRatio: Tally | 0;
+  listGenderRatio: Tally | 0;
   isGenderRatioValid: boolean | null;
 };
 

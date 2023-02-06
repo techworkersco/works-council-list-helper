@@ -37,6 +37,7 @@ describe("dHondt", () => {
       zebras: 5,
     });
   });
+
   it("should hande a tie with odd available seats favoring the first candidate", () => {
     expect(
       dHondt(
@@ -51,6 +52,7 @@ describe("dHondt", () => {
       zebras: 5,
     });
   });
+
   it("should distribute seats evenly with even candidates", () => {
     expect(
       dHondt(
@@ -81,7 +83,8 @@ describe("dHondt", () => {
       zebras: 5,
     });
   });
-
+  // TODO: I am suspicious about this... are we sure this is how dHondt is supposed to work?
+  // In _every case) one vote is enough for at least 1 seat.
   it("distribute votes evenly for 3 seats even with wildly disproportionate votes", () => {
     expect(
       dHondt(
