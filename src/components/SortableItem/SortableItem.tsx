@@ -104,6 +104,9 @@ export function ItemContent({
                 });
               setEditing && setEditing(false);
             }}
+            onAbort={(e) => {
+              setEditing && setEditing(false);
+            }}
           >
             {genders.map((gender) => {
               return (

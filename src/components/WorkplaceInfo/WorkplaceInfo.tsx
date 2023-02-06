@@ -28,8 +28,6 @@ const NumWorkers = ({
               actions[`setNum${gender}`](parsedValue);
             }
           }
-          // console.log("focus!");
-          // e.target.focus();
         }}
       />
     </div>
@@ -56,6 +54,8 @@ export function WorkplaceInfo({
     totalVotes,
   } = data;
   const minorityGenderHasMembers = data[`num${minorityGender}`] > 0;
+
+  const numMinorityWorkers = workplaceGenderQuota[minorityGender];
   return (
     <form>
       <NumWorkers
@@ -91,22 +91,28 @@ export function WorkplaceInfo({
         </span>
       </div>
       {/* TODO: how does minority gender work with single member works councils? */}
-      {worksCouncilSize > 1 && minorityGenderHasMembers && (
-        <div className="input-control">
-          <label htmlFor="workplaceGenderQuota">Dhondt Gender Quota</label>
-          <div
-            className={data.isGenderQuotaAchieved ? "cell" : "error"}
-            id="numSeats"
-          >
-            {`There ${
-              data.isGenderQuotaAchieved ? "is" : "should be"
-            } at least ${
-              workplaceGenderQuota[minorityGender]
-            } works council member(s) for the minority gender (${minorityGender})
+
+      <div className="input-control">
+        <label htmlFor="workplaceGenderQuota">Dhondt Gender Quota</label>
+        <div
+          className={data.isGenderQuotaAchieved ? "cell" : "error"}
+          id="numSeats"
+        >
+          {worksCouncilSize > 1 &&
+            minorityGenderHasMembers &&
+            numMinorityWorkers ? (
+              <>
+                {`There ${
+                  data.isGenderQuotaAchieved ? "is" : "should be"
+                } at least ${
+                  numMinorityWorkers
+                } works council member(s) for the minority gender (${minorityGender})
                   `}
-          </div>
+              </>
+            ): 'Minority gender does not apply with less than 5 candidates or when the minority proporition is so small that they receive 0 seats'}
         </div>
-      )}
+      </div>
+
       <div className="input-control">
         <label htmlFor="totalVotes">Total Candidates</label>
         <span className="cell">{candidateSeatCount}</span>

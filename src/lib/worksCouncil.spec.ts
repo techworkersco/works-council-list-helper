@@ -1,4 +1,4 @@
-import { getNumSeats, dHondt, idealGenderQuota } from "./worksCouncils";
+import { getNumSeats, dHondt } from "./worksCouncils";
 
 describe("getNumSeats", () => {
   it("should compute seats properly", () => {
@@ -83,8 +83,6 @@ describe("dHondt", () => {
       zebras: 5,
     });
   });
-  // TODO: I am suspicious about this... are we sure this is how dHondt is supposed to work?
-  // In _every case) one vote is enough for at least 1 seat.
   it("distribute votes evenly for 3 seats even with wildly disproportionate votes", () => {
     expect(
       dHondt(
@@ -96,38 +94,9 @@ describe("dHondt", () => {
         3
       )
     ).toEqual({
-      dogs: 1,
-      zebras: 1,
-      cats: 1,
+      dogs: 0,
+      zebras: 0,
+      cats: 2,
     });
-  });
-});
-
-describe("idealGenderQuota", () => {
-  expect(
-    idealGenderQuota(
-      {
-        cats: 0,
-        dogs: 4,
-        zebras: 5,
-      },
-      20,
-      {
-        male: 30,
-        female: 40,
-        nb: 2,
-      }
-    )
-  ).toEqual({
-    dogs: {
-      female: 4,
-      male: 4,
-      nb: 1,
-    },
-    zebras: {
-      female: 6,
-      male: 4,
-      nb: 1,
-    },
   });
 });

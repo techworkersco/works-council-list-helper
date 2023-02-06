@@ -12,7 +12,7 @@ import { dHondt } from "./worksCouncils";
 function tallyAndValidateList(
   list: ListItem,
   listId: string,
-  workplaceGenderTally: Tally,
+  binaryWorkplaceGenderTally: Tally,
   seatDistribution: Tally,
   minorityGender?: GenderEnum
 ): ListDataItem {
@@ -35,9 +35,9 @@ function tallyAndValidateList(
 
   const listDistribution = seatDistribution && seatDistribution[listId];
   const listGenderRatio =
-    workplaceGenderTally &&
+    binaryWorkplaceGenderTally &&
     listDistribution &&
-    dHondt(workplaceGenderTally, listDistribution);
+    dHondt(binaryWorkplaceGenderTally, listDistribution);
 
   let isGenderRatioValid = null;
 
@@ -57,7 +57,7 @@ function tallyAndValidateList(
 
 export function tallyAndValidateLists(
   lists: Items,
-  workplaceGenderTally: Tally,
+  binaryWorkplaceGenderTally: Tally,
   seatDistribution: Tally,
   minorityGender?: GenderEnum
 ): ListData {
@@ -65,7 +65,7 @@ export function tallyAndValidateLists(
     listData[listId] = tallyAndValidateList(
       list,
       listId,
-      workplaceGenderTally,
+      binaryWorkplaceGenderTally,
       seatDistribution,
       minorityGender
     );

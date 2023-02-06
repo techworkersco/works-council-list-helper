@@ -188,7 +188,7 @@ type ListEditFormProps = {
 
 function ListEditForm({ list, onChange }: ListEditFormProps) {
   return (
-    <form>
+
       <input
         type="text"
         tabIndex={0}
@@ -196,7 +196,6 @@ function ListEditForm({ list, onChange }: ListEditFormProps) {
         defaultValue={list.name}
         onChange={(e) => onChange && onChange(e.target.value)}
       />
-    </form>
   );
 }
 
@@ -622,6 +621,7 @@ export function CandidateLists({
                         renderItem={renderItem}
                         containerId={containerId}
                         getIndex={getMemberIndex}
+                      
                         onChangeItem={(member) =>
                           setItems((items) => {
                             console.log(member.gender)

@@ -35,10 +35,12 @@ function App() {
   const seatDistribution = dHondt(voteTally, worksCouncilSize);
   const actions = { setNumMen, setNumWomen, setNumNonBinary };
 
-  const workplaceGenderTally: Record<GenderEnum, number> = {
+  const binaryWorkplaceGenderTally: Record<
+    GenderEnum.man | GenderEnum.woman,
+    number
+  > = {
     [GenderEnum.man]: numMen,
     [GenderEnum.woman]: numWomen,
-    [GenderEnum.nonbinary]: numNonBinary,
   };
 
   // undefined by default - important!
@@ -50,7 +52,9 @@ function App() {
     minorityGender = numMen >= numWomen ? GenderEnum.woman : GenderEnum.man;
   }
 
-  const workplaceGenderQuota = dHondt(workplaceGenderTally, worksCouncilSize);
+  const workplaceGenderQuota = dHondt(binaryWorkplaceGenderTally, worksCouncilSize);
+
+  console.log({ binaryWorkplaceGenderTally, workplaceGenderQuota });
 
   const candidateSeatCount = Object.values(lists).reduce((total, list) => {
     return total + (list.members.length ?? 0);
@@ -66,7 +70,7 @@ function App() {
 
   const listData = tallyAndValidateLists(
     lists,
-    workplaceGenderTally,
+    binaryWorkplaceGenderTally,
     seatDistribution,
     minorityGender
   );
