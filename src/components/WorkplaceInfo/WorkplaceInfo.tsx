@@ -17,7 +17,7 @@ const NumWorkers = ({
       <input
         tabIndex={0}
         min={0}
-        name={label}
+        id={label}
         type="number"
         defaultValue={value}
         onChange={(e) => {
@@ -96,20 +96,20 @@ export function WorkplaceInfo({
         <label htmlFor="workplaceGenderQuota">Dhondt Gender Quota</label>
         <div
           className={data.isGenderQuotaAchieved ? "cell" : "error"}
-          id="numSeats"
+          id="workplaceGenerQuota"
         >
           {worksCouncilSize > 1 &&
-            minorityGenderHasMembers &&
-            numMinorityWorkers ? (
-              <>
-                {`There ${
-                  data.isGenderQuotaAchieved ? "is" : "should be"
-                } at least ${
-                  numMinorityWorkers
-                } works council member(s) for the minority gender (${minorityGender})
+          minorityGenderHasMembers &&
+          numMinorityWorkers ? (
+            <>
+              {`There ${
+                data.isGenderQuotaAchieved ? "is" : "should be"
+              } at least ${numMinorityWorkers} works council member(s) for the minority gender (${minorityGender})
                   `}
-              </>
-            ): 'Minority gender does not apply with less than 5 candidates or when the minority proporition is so small that they receive 0 seats'}
+            </>
+          ) : (
+            "Minority gender does not apply with less than 5 candidates or when the minority proporition is so small that they receive 0 seats"
+          )}
         </div>
       </div>
 
