@@ -188,7 +188,7 @@ type ListEditFormProps = {
 
 function ListEditForm({ list, onChange }: ListEditFormProps) {
   return (
-
+    <form>
       <input
         type="text"
         tabIndex={0}
@@ -196,6 +196,7 @@ function ListEditForm({ list, onChange }: ListEditFormProps) {
         defaultValue={list.name}
         onChange={(e) => onChange && onChange(e.target.value)}
       />
+    </form>
   );
 }
 

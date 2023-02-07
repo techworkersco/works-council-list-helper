@@ -54,8 +54,6 @@ function App() {
 
   const workplaceGenderQuota = dHondt(binaryWorkplaceGenderTally, worksCouncilSize);
 
-  console.log({ binaryWorkplaceGenderTally, workplaceGenderQuota });
-
   const candidateSeatCount = Object.values(lists).reduce((total, list) => {
     return total + (list.members.length ?? 0);
   }, 0);

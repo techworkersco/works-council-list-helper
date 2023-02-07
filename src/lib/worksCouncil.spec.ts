@@ -33,8 +33,8 @@ describe("dHondt", () => {
         10
       )
     ).toEqual({
-      dogs: 5,
-      zebras: 5,
+      dogs: 4,
+      zebras: 6,
     });
   });
 
@@ -53,7 +53,7 @@ describe("dHondt", () => {
     });
   });
 
-  it("should distribute seats evenly with even candidates", () => {
+  it("should distribute seats evenly with ties with even candidates", () => {
     expect(
       dHondt(
         {
@@ -68,7 +68,7 @@ describe("dHondt", () => {
     });
   });
 
-  it("should grant a tie with even votes", () => {
+  it("should not grant a tie with even seats and slightly imbalanced votes", () => {
     expect(
       dHondt(
         {
@@ -79,11 +79,12 @@ describe("dHondt", () => {
         10
       )
     ).toEqual({
-      dogs: 5,
-      zebras: 5,
+      dogs: 4,
+      zebras: 6,
     });
   });
-  it("distribute votes evenly for 3 seats even with wildly disproportionate votes", () => {
+
+  it("distribute votes properly when there are single votes for lists", () => {
     expect(
       dHondt(
         {
@@ -94,9 +95,7 @@ describe("dHondt", () => {
         3
       )
     ).toEqual({
-      dogs: 0,
-      zebras: 0,
-      cats: 2,
+      cats: 3,
     });
   });
 });
