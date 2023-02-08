@@ -14,10 +14,42 @@ function tallyAndValidateList(
   listId: string,
   binaryWorkplaceGenderTally: Tally,
   seatDistribution: Tally,
+  leftoverDistribution: number,
   minorityGender?: GenderEnum
 ): ListDataItem {
+  const listDistribution = seatDistribution && seatDistribution[listId];
+  const listGenderRatio =
+    binaryWorkplaceGenderTally &&
+    listDistribution &&
+    dHondt(binaryWorkplaceGenderTally, listDistribution);
+
+  let isGenderRatioValid = null;
+
+  let popularlyElectedMembers: number[] = [];
+  let minorityGenderPopularlyElectedMembers: number[] = [];
+  let overflowElectedMembers: number[] = [];
+
+  if (listDistribution > list.members.length) {
+    leftoverDistribution += listDistribution - list.members.length;
+  }
+
+  list.members.forEach((member, i) => {
+    if (i < listDistribution) {
+      popularlyElectedMembers.push(i);
+      if (member.gender === minorityGender) {
+        minorityGenderPopularlyElectedMembers.push(i);
+      }
+    } else {
+      if (leftoverDistribution > 0) {
+
+        overflowElectedMembers.push(i);
+        leftoverDistribution = leftoverDistribution - 1;
+      }
+    }
+  });
+
   const popularListGenderTally: Record<GenderEnum, number> = list.members
-    .filter((m) => m.elected)
+    .filter((m, i) => popularlyElectedMembers.includes(i))
     .reduce(
       (tally, member) => {
         if (tally[member.gender] === undefined) {
@@ -32,19 +64,9 @@ function tallyAndValidateList(
         [GenderEnum.nonbinary]: 0,
       } as Record<GenderEnum, number>
     );
-
-  const listDistribution = seatDistribution && seatDistribution[listId];
-  const listGenderRatio =
-    binaryWorkplaceGenderTally &&
-    listDistribution &&
-    dHondt(binaryWorkplaceGenderTally, listDistribution);
-
-  let isGenderRatioValid = null;
-
   if (listGenderRatio && minorityGender) {
     isGenderRatioValid = Boolean(
-      popularListGenderTally[minorityGender] >=
-        listGenderRatio[minorityGender]
+      popularListGenderTally[minorityGender] >= listGenderRatio[minorityGender]
     );
   }
   return {
@@ -52,6 +74,10 @@ function tallyAndValidateList(
     listDistribution,
     listGenderRatio,
     isGenderRatioValid,
+    popularlyElectedMembers,
+    minorityGenderPopularlyElectedMembers,
+    overflowElectedMembers,
+    leftoverDistribution,
   };
 }
 
@@ -61,14 +87,19 @@ export function tallyAndValidateLists(
   seatDistribution: Tally,
   minorityGender?: GenderEnum
 ): ListData {
-  return Object.entries(lists).reduce((listData, [listId, list]) => {
-    listData[listId] = tallyAndValidateList(
-      list,
-      listId,
-      binaryWorkplaceGenderTally,
-      seatDistribution,
-      minorityGender
-    );
-    return listData;
-  }, {} as ListData);
+  let leftoverDistribution = 0;
+  return Object.entries(lists)
+    .sort(([, list], [, listA]) => listA.votes - list.votes)
+    .reduce((listData, [listId, list]) => {
+      listData[listId] = tallyAndValidateList(
+        list,
+        listId,
+        binaryWorkplaceGenderTally,
+        seatDistribution,
+        leftoverDistribution,
+        minorityGender
+      );
+      leftoverDistribution = listData[listId].leftoverDistribution;
+      return listData;
+    }, {} as ListData);
 }

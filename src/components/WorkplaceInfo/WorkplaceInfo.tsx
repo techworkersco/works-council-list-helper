@@ -46,7 +46,7 @@ export function WorkplaceInfo({
     worksCouncilSize,
     minorityGender,
     workplaceGenderQuota,
-    candidateSeatCount,
+    totalCandidates,
     notEnoughSeats,
     moreVotesThanWorkers,
     suggestMoreSeats,
@@ -56,6 +56,9 @@ export function WorkplaceInfo({
   const minorityGenderHasMembers = data[`num${minorityGender}`] > 0;
 
   const numMinorityWorkers = workplaceGenderQuota[minorityGender];
+  const isQuotaDisabled =
+    worksCouncilSize > 1 && minorityGenderHasMembers && numMinorityWorkers;
+
   return (
     <form>
       <NumWorkers
@@ -95,12 +98,12 @@ export function WorkplaceInfo({
       <div className="input-control">
         <label htmlFor="workplaceGenderQuota">Dhondt Gender Quota</label>
         <div
-          className={data.isGenderQuotaAchieved ? "cell" : "error"}
+          className={
+            !data.isGenderQuotaAchieved && isQuotaDisabled ? "error" : "cell"
+          }
           id="workplaceGenerQuota"
         >
-          {worksCouncilSize > 1 &&
-          minorityGenderHasMembers &&
-          numMinorityWorkers ? (
+          {isQuotaDisabled ? (
             <>
               {`There ${
                 data.isGenderQuotaAchieved ? "is" : "should be"
@@ -115,7 +118,7 @@ export function WorkplaceInfo({
 
       <div className="input-control">
         <label htmlFor="totalVotes">Total Candidates</label>
-        <span className="cell">{candidateSeatCount}</span>
+        <span className="cell">{totalCandidates}</span>
         {!notEnoughSeats && suggestMoreSeats && (
           <div className="warning">
             Note: For a more optimal and fair election, you should have at least{" "}
@@ -124,7 +127,7 @@ export function WorkplaceInfo({
         )}
         <div className="error">
           {notEnoughSeats &&
-            `Note: You don't have enough choices (${candidateSeatCount}) between the lists below to form the ${worksCouncilSize} person works council board`}
+            `Note: You don't have enough choices (${totalCandidates}) between the lists below to form the ${worksCouncilSize} person works council board`}
         </div>
       </div>
       {!!totalWorkers && (

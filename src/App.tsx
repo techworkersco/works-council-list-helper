@@ -16,6 +16,8 @@ enum ListDisplay {
   horizontal,
 }
 
+const screenWidth = window.outerWidth;
+
 function App() {
   const [numWomen, setNumWomen] = useSessionState("numWomen", {
     defaultValue: 0,
@@ -28,6 +30,10 @@ function App() {
   });
 
   const [lists, setLists] = useState<Items>({});
+  const [listDisplay, setListDisplay] = useState(
+    screenWidth > 900 ? ListDisplay.horizontal : ListDisplay.vertical
+  );
+
   const totalWorkers = numWomen + numMen + numNonBinary;
   const worksCouncilSize = getNumSeats(totalWorkers);
   const voteTally = pluck(lists, "votes") as Tally;
@@ -52,17 +58,18 @@ function App() {
     minorityGender = numMen >= numWomen ? GenderEnum.woman : GenderEnum.man;
   }
 
-  const workplaceGenderQuota = dHondt(binaryWorkplaceGenderTally, worksCouncilSize);
+  const workplaceGenderQuota = dHondt(
+    binaryWorkplaceGenderTally,
+    worksCouncilSize
+  );
 
-  const candidateSeatCount = Object.values(lists).reduce((total, list) => {
+  const totalCandidates = Object.values(lists).reduce((total, list) => {
     return total + (list.members.length ?? 0);
   }, 0);
 
-  const notEnoughSeats = candidateSeatCount < worksCouncilSize;
+  const notEnoughSeats = totalCandidates < worksCouncilSize;
   const suggestedSeats = worksCouncilSize * 2;
-  const suggestMoreSeats = suggestedSeats > candidateSeatCount;
-
-  const [listDisplay, setListDisplay] = useState(ListDisplay.horizontal);
+  const suggestMoreSeats = suggestedSeats > totalCandidates;
 
   const moreVotesThanWorkers = totalVotes > totalWorkers;
 
@@ -73,13 +80,8 @@ function App() {
     minorityGender
   );
 
-  const numMinorityPopularlyElected = Object.values(lists).reduce(
-    (total, list) => {
-      const numMinority = list.members.filter(
-        (m) => m.elected && m.gender === minorityGender
-      ).length;
-      return (total += numMinority);
-    },
+  const numMinorityPopularlyElected = Object.values(listData).reduce(
+    (total, list) => (total += list.minorityGenderPopularlyElectedMembers.length),
     0
   );
 
@@ -102,7 +104,7 @@ function App() {
     minorityGender,
     workplaceGenderQuota,
     isGenderQuotaAchieved,
-    candidateSeatCount,
+    totalCandidates,
     notEnoughSeats,
     suggestMoreSeats,
     moreVotesThanWorkers,

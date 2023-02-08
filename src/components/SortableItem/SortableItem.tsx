@@ -25,6 +25,7 @@ interface SortableItemProps {
   renderItem(): React.ReactElement;
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
   onChangeItem: (member: ListMember) => void;
+  status: { isPopularlyElected?: boolean, isOverflowElected?: boolean }
 }
 
 // const buttonStyles = { display: "block" };
@@ -135,6 +136,7 @@ export function SortableItem({
   onRemove,
   onChangeItem,
   member,
+  status
 }: SortableItemProps) {
   const [isEditing, setEditing] = useState(false);
   const {
@@ -180,7 +182,7 @@ export function SortableItem({
         containerId,
       })}
       onRemove={onRemove}
-      color={getColor(member)}
+      color={getColor(status)}
       transition={transition}
       transform={transform}
       fadeIn={mountedWhileDragging}

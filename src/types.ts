@@ -22,7 +22,7 @@ export const SingularGenders = {
 export type ListMember = {
   id: UniqueIdentifier;
   gender: GenderEnum;
-  elected?: boolean;
+  isPopularlyElected?: boolean;
 };
 
 export type ListItem = {
@@ -36,6 +36,10 @@ export type ListDataItem = {
   listDistribution: number;
   listGenderRatio: Tally | 0;
   isGenderRatioValid: boolean | null;
+  popularlyElectedMembers: number[];
+  overflowElectedMembers: number[];
+  minorityGenderPopularlyElectedMembers: number[];
+  leftoverDistribution: number;
 };
 
 export type Tdata = {
@@ -50,7 +54,7 @@ export type Tdata = {
   moreVotesThanWorkers: boolean;
   notEnoughSeats: boolean;
   suggestMoreSeats: boolean;
-  candidateSeatCount: number;
+  totalCandidates: number;
   suggestedSeats: number;
   totalVotes: number;
 };

@@ -600,15 +600,10 @@ export function CandidateLists({
               >
                 <SortableContext items={container.members} strategy={strategy}>
                   {container.members.map((member, index) => {
-                    if (
-                      data &&
-                      data.listDistribution &&
-                      index < data.listDistribution
-                    ) {
-                      member.elected = true;
-                    } else {
-                      member.elected = false;
-                    }
+                    const isPopularlyElected = data?.popularlyElectedMembers.includes(index);
+                    const isOverflowElected = data?.overflowElectedMembers.includes(index);
+                    // console.log(data?.overflowElectedMembers)
+                    // console.log({ isOverflowElected })
                     return (
                       <SortableItem
                         disabled={isSortingContainer}
@@ -616,19 +611,18 @@ export function CandidateLists({
                         index={index}
                         handle={handle}
                         key={member.id}
+                        status={{ isPopularlyElected, isOverflowElected }}
                         onRemove={() => handleRemoveItem(index, containerId)}
                         style={getItemStyles}
                         wrapperStyle={wrapperStyle}
                         renderItem={renderItem}
                         containerId={containerId}
                         getIndex={getMemberIndex}
-                      
                         onChangeItem={(member) =>
                           setItems((items) => {
-                            console.log(member.gender)
                             items[containerId].members[index].gender =
                               member.gender;
-                            return { ...items };
+                            return items;
                           })
                         }
                       />
@@ -681,6 +675,7 @@ export function CandidateLists({
                                 // bind the change
                                 return { ...items };
                               });
+                              setContainers((lists) => lists.sort((a,b) => items[b].votes - items[a].votes))
                             }}
                             list={items[containerId]}
                           />
