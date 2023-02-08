@@ -105,9 +105,16 @@ export function WorkplaceInfo({
         >
           {isQuotaDisabled ? (
             <>
+              {/* todo: replace with ICU pluralisation */}
               {`There ${
-                data.isGenderQuotaAchieved ? "is" : "should be"
-              } at least ${numMinorityWorkers} works council member(s) for the minority gender (${minorityGender})
+                data.isGenderQuotaAchieved
+                  ? numMinorityWorkers > 1
+                    ? "are"
+                    : "is"
+                  : "should be"
+              } at least ${numMinorityWorkers} works council member${
+                numMinorityWorkers > 1 ? "s" : ""
+              } for the minority gender (${minorityGender})
                   `}
             </>
           ) : (

@@ -600,10 +600,13 @@ export function CandidateLists({
               >
                 <SortableContext items={container.members} strategy={strategy}>
                   {container.members.map((member, index) => {
-                    const isPopularlyElected = data?.popularlyElectedMembers.includes(index);
-                    const isOverflowElected = data?.overflowElectedMembers.includes(index);
-                    // console.log(data?.overflowElectedMembers)
-                    // console.log({ isOverflowElected })
+
+                    const status = {
+                      isPopularlyElected: data?.popularlyElectedMembers.includes(index),
+                      isOverflowElected: data?.overflowElectedMembers.includes(index)
+                    }
+   
+
                     return (
                       <SortableItem
                         disabled={isSortingContainer}
@@ -611,7 +614,7 @@ export function CandidateLists({
                         index={index}
                         handle={handle}
                         key={member.id}
-                        status={{ isPopularlyElected, isOverflowElected }}
+                        status={status}
                         onRemove={() => handleRemoveItem(index, containerId)}
                         style={getItemStyles}
                         wrapperStyle={wrapperStyle}
@@ -675,7 +678,12 @@ export function CandidateLists({
                                 // bind the change
                                 return { ...items };
                               });
-                              setContainers((lists) => lists.sort((a,b) => items[b].votes - items[a].votes))
+                              // reorder containers based on vote changes
+                              setContainers((lists) =>
+                                lists.sort(
+                                  (a, b) => items[b].votes - items[a].votes
+                                )
+                              );
                             }}
                             list={items[containerId]}
                           />
