@@ -39,7 +39,7 @@ export type ListDataItem = {
   popularlyElectedMembers: number[];
   overflowElectedMembers: number[];
   minorityGenderElectedMembers: number[];
-  leftoverDistribution: number;
+  overflowDistribution: number;
 };
 
 export type Tdata = {

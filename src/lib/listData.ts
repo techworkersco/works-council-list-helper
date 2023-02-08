@@ -14,7 +14,7 @@ function tallyAndValidateList(
   listId: string,
   binaryWorkplaceGenderTally: Tally,
   seatDistribution: Tally,
-  leftoverDistribution: number,
+  overflowDistribution: number,
   minorityGender?: GenderEnum
 ): ListDataItem {
   const listDistribution = seatDistribution && seatDistribution[listId];
@@ -30,7 +30,7 @@ function tallyAndValidateList(
   let overflowElectedMembers: number[] = [];
 
   if (listDistribution > list.members.length) {
-    leftoverDistribution += listDistribution - list.members.length;
+    overflowDistribution += listDistribution - list.members.length;
   }
 
   list.members.forEach((member, i) => {
@@ -40,12 +40,14 @@ function tallyAndValidateList(
         minorityGenderElectedMembers.push(i);
       }
     } else {
-      if (leftoverDistribution > 0) {
+      // if there are overflow votes from other lists to distribute,
+      // and this list has at least one vote
+      if (overflowDistribution > 0 && list.votes > 0) {
         overflowElectedMembers.push(i);
         if (member.gender === minorityGender) {
           minorityGenderElectedMembers.push(i);
         }
-        leftoverDistribution = leftoverDistribution - 1;
+        overflowDistribution = overflowDistribution - 1;
       }
     }
   });
@@ -79,7 +81,7 @@ function tallyAndValidateList(
     popularlyElectedMembers,
     minorityGenderElectedMembers,
     overflowElectedMembers,
-    leftoverDistribution,
+    overflowDistribution,
   };
 }
 
@@ -89,19 +91,23 @@ export function tallyAndValidateLists(
   seatDistribution: Tally,
   minorityGender?: GenderEnum
 ): ListData {
-  let leftoverDistribution = 0;
-  return Object.entries(lists)
-    .sort(([, list], [, listA]) => listA.votes - list.votes)
-    .reduce((listData, [listId, list]) => {
-      listData[listId] = tallyAndValidateList(
-        list,
-        listId,
-        binaryWorkplaceGenderTally,
-        seatDistribution,
-        leftoverDistribution,
-        minorityGender
-      );
-      leftoverDistribution = listData[listId].leftoverDistribution;
-      return listData;
-    }, {} as ListData);
+  let overflowDistribution = 0;
+  return (
+    Object.entries(lists)
+      // because of overflowDistribution for finding "overflow"
+      // seats, we need to sort the lists by number of votes descending
+      .sort(([, list], [, listA]) => listA.votes - list.votes)
+      .reduce((listData, [listId, list]) => {
+        listData[listId] = tallyAndValidateList(
+          list,
+          listId,
+          binaryWorkplaceGenderTally,
+          seatDistribution,
+          overflowDistribution,
+          minorityGender
+        );
+        overflowDistribution = listData[listId].overflowDistribution;
+        return listData;
+      }, {} as ListData)
+  );
 }
