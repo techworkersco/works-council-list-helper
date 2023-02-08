@@ -38,7 +38,7 @@ export type ListDataItem = {
   isGenderRatioValid: boolean | null;
   popularlyElectedMembers: number[];
   overflowElectedMembers: number[];
-  minorityGenderPopularlyElectedMembers: number[];
+  minorityGenderElectedMembers: number[];
   leftoverDistribution: number;
 };
 

@@ -26,7 +26,7 @@ function tallyAndValidateList(
   let isGenderRatioValid = null;
 
   let popularlyElectedMembers: number[] = [];
-  let minorityGenderPopularlyElectedMembers: number[] = [];
+  let minorityGenderElectedMembers: number[] = [];
   let overflowElectedMembers: number[] = [];
 
   if (listDistribution > list.members.length) {
@@ -37,12 +37,14 @@ function tallyAndValidateList(
     if (i < listDistribution) {
       popularlyElectedMembers.push(i);
       if (member.gender === minorityGender) {
-        minorityGenderPopularlyElectedMembers.push(i);
+        minorityGenderElectedMembers.push(i);
       }
     } else {
       if (leftoverDistribution > 0) {
-
         overflowElectedMembers.push(i);
+        if (member.gender === minorityGender) {
+          minorityGenderElectedMembers.push(i);
+        }
         leftoverDistribution = leftoverDistribution - 1;
       }
     }
@@ -75,7 +77,7 @@ function tallyAndValidateList(
     listGenderRatio,
     isGenderRatioValid,
     popularlyElectedMembers,
-    minorityGenderPopularlyElectedMembers,
+    minorityGenderElectedMembers,
     overflowElectedMembers,
     leftoverDistribution,
   };

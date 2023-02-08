@@ -81,7 +81,7 @@ function App() {
   );
 
   const numMinorityPopularlyElected = Object.values(listData).reduce(
-    (total, list) => (total += list.minorityGenderPopularlyElectedMembers.length),
+    (total, list) => (total += list.minorityGenderElectedMembers.length),
     0
   );
 
