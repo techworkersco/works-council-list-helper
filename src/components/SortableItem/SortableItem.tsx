@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 
-import { Button, Item } from "../";
+import { Item } from "../";
 
 import { ItemProps } from "../Item";
 
 import { getColor } from "../../utilities/getColor";
-import { ListMember, genderArray, SingularGenders } from "../../types";
+import { ListMember, SingularGenders, GenderEnum } from "../../types";
+
+import styles from "./SortableItem.module.css";
 import { Edit } from "../Item/components";
 
 interface SortableItemProps {
@@ -23,60 +25,101 @@ interface SortableItemProps {
   renderItem(): React.ReactElement;
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
   onChangeItem: (member: ListMember) => void;
+  status: { isPopularlyElected?: boolean, isOverflowElected?: boolean }
 }
 
+// const buttonStyles = { display: "block" };
 
-const styles = { display: "block" };
-
-
-export function ItemForm({
-  member,
-  onChangeItem,
-}: {
-  member: ListMember;
-  onChangeItem?: (member: ListMember) => void;
-}) {
-  const [changed, setChanged] = useState<string | undefined>();
-  return (
-    <>
-      <div>
-        {genderArray.map((gender) => (
-          <Button
-            style={
-              (!changed && member.gender === gender) || changed === gender
-                ? { ...styles, backgroundColor: "whitesmoke", color: "black" }
-                : styles
-            }
-            aria-disabled={member.gender === gender}
-            onClick={() => {
-              setChanged(gender);
-              onChangeItem && onChangeItem({ ...member, gender });
-            }}
-            key={member.id + gender}
-          >
-            {SingularGenders[gender]}
-          </Button>
-        ))}
-      </div>
-    </>
-  );
-}
+// export function ItemForm({
+//   member,
+//   onChangeItem,
+// }: {
+//   member: ListMember;
+//   onChangeItem?: (member: ListMember) => void;
+// }) {
+//   const [changed, setChanged] = useState<string | undefined>();
+//   return (
+//     <>
+//       <div>
+//         {genderArray.map((gender) => (
+//           <Button
+//             style={
+//               (!changed && member.gender === gender) || changed === gender
+//                 ? { ...buttonStyles, backgroundColor: "whitesmoke", color: "black" }
+//                 : buttonStyles
+//             }
+//             aria-disabled={member.gender === gender}
+//             onClick={() => {
+//               setChanged(gender);
+//               onChangeItem && onChangeItem({ ...member, gender });
+//             }}
+//             key={member.id + gender}
+//           >
+//             {SingularGenders[gender]}
+//           </Button>
+//         ))}
+//       </div>
+//     </>
+//   );
+// }
 
 export function ItemContent({
   member,
   isEditing = false,
+  setEditing,
   onChangeItem,
 }: {
   member: ListMember;
   isEditing?: boolean;
   onChangeItem?: (member: ListMember) => void;
+  setEditing?: (toggle: boolean) => void;
 }) {
+  const genders = Object.values(GenderEnum) as GenderEnum[];
+
   return (
-    <div>
+    <div className={styles.ItemContent}>
       <div>
-        {member.id} <i>{SingularGenders[member.gender]}</i>
+        {member.id}{" "}
+        {!isEditing ? (
+          <span
+            role="button"
+            aria-label="Modify list member gender"
+            onClick={() => {
+              console.log("clicked");
+              setEditing && setEditing(!isEditing);
+            }}
+          >
+            {SingularGenders[member.gender]}
+          </span>
+        ) : (
+          <select
+            autoFocus
+            tabIndex={0}
+            aria-label="Select list member gender"
+            defaultValue={member.gender}
+            onChange={(e) => {
+              onChangeItem &&
+                onChangeItem({
+                  ...member,
+                  gender: e.target.value as GenderEnum,
+                });
+              setEditing && setEditing(false);
+            }}
+            onAbort={(e) => {
+              setEditing && setEditing(false);
+            }}
+          >
+            {genders.map((gender) => {
+              return (
+                <option key={member.id + gender} value={gender}>
+                  {SingularGenders[gender]}
+                </option>
+              );
+            })}
+          </select>
+        )}
       </div>
-      {isEditing && <ItemForm member={member} onChangeItem={onChangeItem} />}
+      {/* {isEditing && <ItemForm member={member} onChangeItem={onChangeItem} />} */}
     </div>
   );
 }
@@ -93,6 +136,7 @@ export function SortableItem({
   onRemove,
   onChangeItem,
   member,
+  status
 }: SortableItemProps) {
   const [isEditing, setEditing] = useState(false);
   const {
@@ -119,6 +163,7 @@ export function SortableItem({
           member={member}
           isEditing={isEditing}
           onChangeItem={onChangeItem}
+          setEditing={setEditing}
         />
       }
       dragging={isDragging}
@@ -127,6 +172,7 @@ export function SortableItem({
       handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
       index={index}
       wrapperStyle={wrapperStyle({ index })}
+      isEditing={isEditing}
       style={style({
         index,
         value: member.id,
@@ -136,14 +182,18 @@ export function SortableItem({
         containerId,
       })}
       onRemove={onRemove}
-      color={getColor(member)}
+      color={getColor(status)}
       transition={transition}
       transform={transform}
       fadeIn={mountedWhileDragging}
       listeners={listeners}
       renderItem={renderItem}
       renderActions={() => (
-        <Edit isActive={isEditing} onClick={() => setEditing(!isEditing)} />
+        <Edit
+          aria-label="Edit list item"
+          isActive={isEditing}
+          onClick={() => setEditing(!isEditing)}
+        />
       )}
     />
   );

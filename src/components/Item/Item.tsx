@@ -24,6 +24,7 @@ export interface Props {
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
   value: React.ReactElement;
+  isEditing?: boolean;
   onRemove?(): void;
   renderItem?(args: {
     dragOverlay: boolean;
@@ -69,6 +70,7 @@ export const Item = React.memo(
         value,
         wrapperStyle,
         renderActions,
+        isEditing,
         ...props
       },
       ref
@@ -138,7 +140,8 @@ export const Item = React.memo(
               handle && styles.withHandle,
               dragOverlay && styles.dragOverlay,
               disabled && styles.disabled,
-              color && styles.color
+              color && styles.color,
+              isEditing && styles.editing
             )}
             style={style}
             data-cypress="draggable-item"
@@ -151,9 +154,9 @@ export const Item = React.memo(
               {(renderActions) &&
                 renderActions({ index, value, sorting, dragging })}
               {onRemove ? (
-                <Remove className={styles.Remove} onClick={onRemove} />
+                <Remove aria-label="Remove item" className={styles.Remove} onClick={onRemove} />
               ) : null}
-              {handle ? <Handle {...handleProps} {...listeners} /> : null}
+              {handle ? <Handle aria-label="Move item" {...handleProps} {...listeners} /> : null}
             </div>
           </div>
         </li>

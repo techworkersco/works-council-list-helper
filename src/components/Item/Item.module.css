@@ -91,6 +91,13 @@ $focused-outline-color: #4c9ffe;
       box-shadow: $box-shadow;
     }
   }
+  select {
+    margin: 0;
+  }
+  &.editing {
+   /* to avoid layout shift on edit toggle... probably a better way to do this! */
+    padding: 17px 20px;
+  }
 
   &.disabled {
     color: #999;

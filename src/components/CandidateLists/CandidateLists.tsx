@@ -600,15 +600,13 @@ export function CandidateLists({
               >
                 <SortableContext items={container.members} strategy={strategy}>
                   {container.members.map((member, index) => {
-                    if (
-                      data &&
-                      data.listDistribution &&
-                      index < data.listDistribution
-                    ) {
-                      member.elected = true;
-                    } else {
-                      member.elected = false;
+
+                    const status = {
+                      isPopularlyElected: data?.popularlyElectedMembers.includes(index),
+                      isOverflowElected: data?.overflowElectedMembers.includes(index)
                     }
+   
+
                     return (
                       <SortableItem
                         disabled={isSortingContainer}
@@ -616,6 +614,7 @@ export function CandidateLists({
                         index={index}
                         handle={handle}
                         key={member.id}
+                        status={status}
                         onRemove={() => handleRemoveItem(index, containerId)}
                         style={getItemStyles}
                         wrapperStyle={wrapperStyle}
@@ -626,25 +625,27 @@ export function CandidateLists({
                           setItems((items) => {
                             items[containerId].members[index].gender =
                               member.gender;
-                            return { ...items };
+                            return items;
                           })
                         }
                       />
                     );
                   })}
-                  <Container
-                    placeholder
-                    style={{
-                      minWidth: "inherit",
-                      width: "100%",
-                      minHeight: 100,
-                    }}
-                    onClick={() => handleAddItem(containerId)}
-                  >
-                    + Add Member
-                  </Container>
+                  <li key={containerId + "-add-member"}>
+                    <Container
+                      placeholder
+                      style={{
+                        minWidth: "inherit",
+                        width: "100%",
+                        minHeight: 100,
+                      }}
+                      onClick={() => handleAddItem(containerId)}
+                    >
+                      + Add Member
+                    </Container>
+                  </li>
                   {container.members.length ? (
-                    <div>
+                    <li key={containerId + "-summary"}>
                       <div className={classNames("form", styles.ListFooter)}>
                         {minorityGender && (
                           <div className="input-control">
@@ -677,6 +678,12 @@ export function CandidateLists({
                                 // bind the change
                                 return { ...items };
                               });
+                              // reorder containers based on vote changes
+                              setContainers((lists) =>
+                                lists.sort(
+                                  (a, b) => items[b].votes - items[a].votes
+                                )
+                              );
                             }}
                             list={items[containerId]}
                           />
@@ -689,16 +696,6 @@ export function CandidateLists({
                                 {data.listDistribution}
                               </span>
                             </div>
-                            {/* <div className="input-control">
-                              <label>List Size Gender Ratio</label>
-                              <span className="cell">
-                                {JSON.stringify(
-                                  data.listSizeGenderRatio,
-                                  null,
-                                  2
-                                )}
-                              </span>
-                            </div> */}
                             {minorityGender && (
                               <div className="input-control">
                                 <label htmlFor="listGenderQuota">
@@ -716,7 +713,7 @@ export function CandidateLists({
                           ""
                         )}
                       </div>
-                    </div>
+                    </li>
                   ) : (
                     ""
                   )}
@@ -735,6 +732,7 @@ export function CandidateLists({
                       type="text"
                       minLength={3}
                       placeholder="List name"
+                      aria-label="New List name input"
                       security=""
                       tabIndex={0}
                       autoFocus
@@ -743,9 +741,10 @@ export function CandidateLists({
                   </div>
                   <div className="input-control">
                     <Button
-                      // @ts-ignore
-                      disabled={!newList || !newList.length}
+                      // @ts-expect-error
+                      disabled={Boolean(!newList || !newList?.length)}
                       tabIndex={0}
+                      aria-label="Create the new list"
                       onClick={() => {
                         if (newList) {
                           setNewList(undefined);
@@ -757,6 +756,7 @@ export function CandidateLists({
                       Create
                     </Button>
                     <Button
+                      aria-label="Cancel creating a new list"
                       onClick={() => {
                         setNewList(undefined);
                         setIsNewList(undefined);

@@ -75,9 +75,9 @@ export const Container = forwardRef<HTMLDivElement, Props>(
           <div className={styles.Header}>
             {label}
             <div className={styles.Actions}>
-              {onToggleEdit ? <Edit onClick={onToggleEdit} isActive={isEditing} /> : undefined}
-              {onRemove ? <Remove onClick={onRemove} /> : undefined}
-              <Handle {...handleProps} />
+              {onToggleEdit ? <Edit aria-label="Edit list" onClick={onToggleEdit} isActive={isEditing} /> : undefined}
+              {onRemove ? <Remove aria-label="Remove list" onClick={onRemove} /> : undefined}
+              <Handle aria-label="Move list" {...handleProps} />
             </div>
           </div>
         ) : null}

@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Works Council Helper",
+  "name": "Helpful tools for planning works councils",
   "icons": [
     {
       "src": "favicon.ico",

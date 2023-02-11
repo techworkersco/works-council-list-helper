@@ -1,4 +1,4 @@
-import { getNumSeats, dHondt, idealGenderQuota } from "./worksCouncils";
+import { getNumSeats, dHondt } from "./worksCouncils";
 
 describe("getNumSeats", () => {
   it("should compute seats properly", () => {
@@ -33,10 +33,11 @@ describe("dHondt", () => {
         10
       )
     ).toEqual({
-      dogs: 5,
-      zebras: 5,
+      dogs: 4,
+      zebras: 6,
     });
   });
+
   it("should hande a tie with odd available seats favoring the first candidate", () => {
     expect(
       dHondt(
@@ -51,7 +52,8 @@ describe("dHondt", () => {
       zebras: 5,
     });
   });
-  it("should distribute seats evenly with even candidates", () => {
+
+  it("should distribute seats evenly with ties with even candidates", () => {
     expect(
       dHondt(
         {
@@ -66,7 +68,7 @@ describe("dHondt", () => {
     });
   });
 
-  it("should grant a tie with even votes", () => {
+  it("should not grant a tie with even seats and slightly imbalanced votes", () => {
     expect(
       dHondt(
         {
@@ -77,12 +79,12 @@ describe("dHondt", () => {
         10
       )
     ).toEqual({
-      dogs: 5,
-      zebras: 5,
+      dogs: 4,
+      zebras: 6,
     });
   });
 
-  it("distribute votes evenly for 3 seats even with wildly disproportionate votes", () => {
+  it("distribute votes properly when there are single votes for lists", () => {
     expect(
       dHondt(
         {
@@ -93,38 +95,7 @@ describe("dHondt", () => {
         3
       )
     ).toEqual({
-      dogs: 1,
-      zebras: 1,
-      cats: 1,
+      cats: 3,
     });
-  });
-});
-
-describe("idealGenderQuota", () => {
-  expect(
-    idealGenderQuota(
-      {
-        cats: 0,
-        dogs: 4,
-        zebras: 5,
-      },
-      20,
-      {
-        male: 30,
-        female: 40,
-        nb: 2,
-      }
-    )
-  ).toEqual({
-    dogs: {
-      female: 4,
-      male: 4,
-      nb: 1,
-    },
-    zebras: {
-      female: 6,
-      male: 4,
-      nb: 1,
-    },
   });
 });

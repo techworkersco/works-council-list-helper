@@ -6,7 +6,7 @@ import useSessionState from "use-session-storage-state";
 
 import { dHondt, getNumSeats } from "./lib/worksCouncils";
 import { Tally, GenderEnum, Items, Tdata } from "./types";
-import { sumValues, sumValuesByProp } from "./utilities/sumValues";
+import { sumValues } from "./utilities/sumValues";
 import { pluck } from "./utilities/pluck";
 import { WorkplaceInfo } from "./components/WorkplaceInfo";
 import { tallyAndValidateLists } from "./lib/listData";
@@ -15,6 +15,8 @@ enum ListDisplay {
   vertical,
   horizontal,
 }
+
+const screenWidth = window.outerWidth;
 
 function App() {
   const [numWomen, setNumWomen] = useSessionState("numWomen", {
@@ -28,6 +30,10 @@ function App() {
   });
 
   const [lists, setLists] = useState<Items>({});
+  const [listDisplay, setListDisplay] = useState(
+    screenWidth > 900 ? ListDisplay.horizontal : ListDisplay.vertical
+  );
+
   const totalWorkers = numWomen + numMen + numNonBinary;
   const worksCouncilSize = getNumSeats(totalWorkers);
   const voteTally = pluck(lists, "votes") as Tally;
@@ -35,10 +41,12 @@ function App() {
   const seatDistribution = dHondt(voteTally, worksCouncilSize);
   const actions = { setNumMen, setNumWomen, setNumNonBinary };
 
-  const workplaceGenderTally: Record<GenderEnum, number> = {
+  const binaryWorkplaceGenderTally: Record<
+    GenderEnum.man | GenderEnum.woman,
+    number
+  > = {
     [GenderEnum.man]: numMen,
     [GenderEnum.woman]: numWomen,
-    [GenderEnum.nonbinary]: numNonBinary,
   };
 
   // undefined by default - important!
@@ -47,35 +55,33 @@ function App() {
   // we only track minority gender when the works council is larger than 3 in size
   // https://www.gesetze-im-internet.de/englisch_betrvg/englisch_betrvg.html#p0117
   if (worksCouncilSize > 3) {
-    minorityGender = numMen > numWomen ? GenderEnum.woman : GenderEnum.man;
+    minorityGender = numMen >= numWomen ? GenderEnum.woman : GenderEnum.man;
   }
 
-  const workplaceGenderQuota = dHondt(workplaceGenderTally, worksCouncilSize);
+  const workplaceGenderQuota = dHondt(
+    binaryWorkplaceGenderTally,
+    worksCouncilSize
+  );
 
-  const candidateSeatCount = sumValuesByProp(lists, "members.length");
+  const totalCandidates = Object.values(lists).reduce((total, list) => {
+    return total + (list.members.length ?? 0);
+  }, 0);
 
-  const notEnoughSeats = candidateSeatCount < worksCouncilSize;
+  const notEnoughSeats = totalCandidates < worksCouncilSize;
   const suggestedSeats = worksCouncilSize * 2;
-  const suggestMoreSeats = suggestedSeats > candidateSeatCount;
-
-  const [listDisplay, setListDisplay] = useState(ListDisplay.horizontal);
+  const suggestMoreSeats = suggestedSeats > totalCandidates;
 
   const moreVotesThanWorkers = totalVotes > totalWorkers;
 
   const listData = tallyAndValidateLists(
     lists,
-    workplaceGenderTally,
+    binaryWorkplaceGenderTally,
     seatDistribution,
     minorityGender
   );
 
-  const numMinorityPopularlyElected = Object.values(lists).reduce(
-    (total, list) => {
-      const numMinority = list.members.filter(
-        (m) => m.elected && m.gender === minorityGender
-      ).length;
-      return (total += numMinority);
-    },
+  const numMinorityPopularlyElected = Object.values(listData).reduce(
+    (total, list) => (total += list.minorityGenderElectedMembers.length),
     0
   );
 
@@ -98,7 +104,7 @@ function App() {
     minorityGender,
     workplaceGenderQuota,
     isGenderQuotaAchieved,
-    candidateSeatCount,
+    totalCandidates,
     notEnoughSeats,
     suggestMoreSeats,
     moreVotesThanWorkers,
@@ -115,12 +121,14 @@ function App() {
       <h2>
         Candidate Lists{" "}
         <button
+          aria-label="toggle horizontal list display"
           onClick={() => setListDisplay(ListDisplay.horizontal)}
           disabled={listDisplay === ListDisplay.horizontal}
         >
           horizontal
         </button>
         <button
+          aria-label="Toggle vertical list display"
           onClick={() => setListDisplay(ListDisplay.vertical)}
           disabled={listDisplay === ListDisplay.vertical}
         >

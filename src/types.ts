@@ -16,13 +16,13 @@ export const genderArray = [
 export const SingularGenders = {
     [GenderEnum.man]: "Man",
     [GenderEnum.woman]: "Woman",
-    [GenderEnum.nonbinary]: "Non-Binary Person",
+    [GenderEnum.nonbinary]: "Non-Binary",
 }
 
 export type ListMember = {
   id: UniqueIdentifier;
   gender: GenderEnum;
-  elected?: boolean;
+  isPopularlyElected?: boolean;
 };
 
 export type ListItem = {
@@ -32,10 +32,14 @@ export type ListItem = {
 };
 
 export type ListDataItem = {
-  electedListGenderTally: Record<GenderEnum, number>;
+  popularListGenderTally: Record<GenderEnum, number>;
   listDistribution: number;
-  listSizeGenderRatio: Tally | 0;
+  listGenderRatio: Tally | 0;
   isGenderRatioValid: boolean | null;
+  popularlyElectedMembers: number[];
+  overflowElectedMembers: number[];
+  minorityGenderElectedMembers: number[];
+  overflowDistribution: number;
 };
 
 export type Tdata = {
@@ -50,26 +54,10 @@ export type Tdata = {
   moreVotesThanWorkers: boolean;
   notEnoughSeats: boolean;
   suggestMoreSeats: boolean;
-  candidateSeatCount: number;
+  totalCandidates: number;
   suggestedSeats: number;
   totalVotes: number;
 };
-
-export type WorkplaceData = {
-  totalWorkers: number;
-  worksCouncilSize: number;
-  minorityGender: GenderEnum | undefined;
-  workplaceGenderQuota: Tally;
-  candidateSeatCount: number;
-  notEnoughSeats: boolean;
-  moreVotesThanWorkers: boolean;
-  suggestMoreSeats: boolean;
-  suggestedSeats: number;
-  totalVotes: number;
-  numWomen: number;
-  numMen: number;
-  numNonBinary: number;
-}
 
 export type Tactions = {
   setNumWomen: (num: number) => void;

@@ -81,7 +81,7 @@ export function idealGenderQuota(
  */
 export function dHondt(workforcePopulation: Tally, seats: number): Tally {
   let dHondt_arrs: [string, number][] = [];
-  for (let i = 0; i < seats; i++) {
+  for (let i = 1; i <= seats; i++) {
     for (const [segment, count] of Object.entries(workforcePopulation)) {
       if (count > 0) {
         dHondt_arrs.push([segment, count / i]);
