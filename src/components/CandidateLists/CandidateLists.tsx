@@ -691,7 +691,7 @@ export function CandidateLists({
                         {data && data.listDistribution ? (
                           <>
                             <div className="input-control">
-                              <label>Seat Distribution (raw)</label>
+                              <label>Seat Distribution (popular)</label>
                               <span className="cell">
                                 {data.listDistribution}
                               </span>
