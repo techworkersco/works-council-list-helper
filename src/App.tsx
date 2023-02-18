@@ -4,6 +4,8 @@ import { CandidateLists } from "./components/CandidateLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 import useSessionState from "use-session-storage-state";
 
+import { FormattedMessage } from "react-intl";
+
 import { dHondt, getNumSeats } from "./lib/worksCouncils";
 import { Tally, GenderEnum, Items, Tdata } from "./types";
 import { sumValues } from "./utilities/sumValues";
@@ -18,7 +20,11 @@ enum ListDisplay {
 
 const screenWidth = window.outerWidth;
 
-function App() {
+type Props = {
+  setLocale: (locale: 'en' | 'de') => void;
+};
+
+function App({ setLocale }: Props) {
   const [numWomen, setNumWomen] = useSessionState("numWomen", {
     defaultValue: 0,
   });
@@ -114,7 +120,13 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Works Council Election Modeller</h1>
+      <h1>
+        <FormattedMessage id="title" />
+        <span>
+          <button onClick={() => setLocale('en')}>en</button>
+          <button onClick={() => setLocale('de')}>de</button>
+        </span>
+      </h1>
 
       <h2>Workplace Info</h2>
       <WorkplaceInfo actions={actions} data={data} />
