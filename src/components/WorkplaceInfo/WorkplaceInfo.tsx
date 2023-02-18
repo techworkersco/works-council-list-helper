@@ -1,7 +1,6 @@
 import { Tdata, Tactions, GenderEnum } from "../../types";
 
-import { FormattedMessage } from "react-intl";
-
+import { FormattedMessage, useIntl } from "react-intl";
 
 const NumWorkers = ({
   gender,
@@ -14,9 +13,18 @@ const NumWorkers = ({
 }) => {
   const label = `num${gender}`;
   const value = data[`num${gender}`];
+
+  const intl = useIntl()
+
+  const localizedGender = intl.formatMessage({ id: `gender.${gender.toLowerCase()}`}, )
   return (
     <div className="input-control">
-      <label htmlFor={label}><FormattedMessage id="label.numGendered" values={{ gender: gender.toLocaleLowerCase() }} /></label>
+      <label htmlFor={label}>
+        <FormattedMessage
+          id="label.numGendered"
+          values={{ gender: localizedGender }}
+        />
+      </label>
       <input
         tabIndex={0}
         min={0}
