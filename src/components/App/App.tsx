@@ -1,5 +1,5 @@
 import { lazy, useState } from "react";
-import { rectSortingStrategy } from "@dnd-kit/sortable";
+
 import useSessionState from "use-session-storage-state";
 
 import { FormattedMessage } from "react-intl";
@@ -10,7 +10,7 @@ import { sumValues } from "../../utilities/sumValues";
 import { pluck } from "../../utilities/pluck";
 import { WorkplaceInfo } from "../WorkplaceInfo";
 import { tallyAndValidateLists } from "../../lib/listData";
-// import { CandidateLists } from "../CandidateLists";
+
 import "./App.css";
 
 const CandidateLists = lazy(() =>
@@ -18,8 +18,6 @@ const CandidateLists = lazy(() =>
     default: CandidateLists,
   }))
 );
-
-
 
 enum ListDisplay {
   vertical,
@@ -157,7 +155,6 @@ export function App({ setLocale }: Props) {
       </h2>
       <CandidateLists
         columns={1}
-        strategy={rectSortingStrategy}
         data={{ totalWorkers }}
         handle
         onChange={setLists}
