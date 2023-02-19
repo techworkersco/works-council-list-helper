@@ -1,14 +1,14 @@
 .Draggable {
   position: relative;
   display: flex;
-  align-items: center;
+  align-lists: center;
   flex-direction: column;
   justify-content: center;
   transition: transform 250ms ease;
 
   > button {
     display: flex;
-    align-items: center;
+    align-lists: center;
     justify-content: center;
     min-height: 54px;
     flex-shrink: 1;

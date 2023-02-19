@@ -1,15 +1,18 @@
-import "./App.css";
+
 import { useState } from "react";
-import { CandidateLists } from "./components/CandidateLists";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 import useSessionState from "use-session-storage-state";
 
-import { dHondt, getNumSeats } from "./lib/worksCouncils";
-import { Tally, GenderEnum, Items, Tdata } from "./types";
-import { sumValues } from "./utilities/sumValues";
-import { pluck } from "./utilities/pluck";
-import { WorkplaceInfo } from "./components/WorkplaceInfo";
-import { tallyAndValidateLists } from "./lib/listData";
+import { FormattedMessage } from "react-intl";
+
+import { dHondt, getNumSeats } from "../../lib/worksCouncils";
+import { Tally, GenderEnum, Items, Tdata } from "../../types";
+import { sumValues } from "../../utilities/sumValues";
+import { pluck } from "../../utilities/pluck";
+import { WorkplaceInfo } from "../WorkplaceInfo";
+import { tallyAndValidateLists } from "../../lib/listData";
+import { CandidateLists } from "../CandidateLists";
+import "./App.css";
 
 enum ListDisplay {
   vertical,
@@ -18,7 +21,11 @@ enum ListDisplay {
 
 const screenWidth = window.outerWidth;
 
-function App() {
+type Props = {
+  setLocale: (locale: "en" | "de") => void;
+};
+
+export function App({ setLocale }: Props) {
   const [numWomen, setNumWomen] = useSessionState("numWomen", {
     defaultValue: 0,
   });
@@ -114,7 +121,13 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Works Council Election Modeller</h1>
+      <h1>
+        <FormattedMessage id="title" />
+        <span>
+          <button onClick={() => setLocale("en")}>en</button>
+          <button onClick={() => setLocale("de")}>de</button>
+        </span>
+      </h1>
 
       <h2>Workplace Info</h2>
       <WorkplaceInfo actions={actions} data={data} />
@@ -159,5 +172,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

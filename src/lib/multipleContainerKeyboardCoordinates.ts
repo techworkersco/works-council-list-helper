@@ -42,8 +42,8 @@ import {
         if (data) {
           const {type, children} = data;
   
-          if (type === 'container' && children?.length > 0) {
-            if (active.data.current?.type !== 'container') {
+          if (type === 'list' && children?.length > 0) {
+            if (active.data.current?.type !== 'list') {
               return;
             }
           }
@@ -95,7 +95,7 @@ import {
             };
           }
   
-          if (newDroppable.data.current?.type === 'container') {
+          if (newDroppable.data.current?.type === 'list') {
             return {
               x: newRect.left + 20,
               y: newRect.top + 74,

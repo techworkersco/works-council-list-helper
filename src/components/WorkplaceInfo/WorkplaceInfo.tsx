@@ -1,5 +1,7 @@
 import { Tdata, Tactions, GenderEnum } from "../../types";
 
+import { FormattedMessage, useIntl } from "react-intl";
+
 const NumWorkers = ({
   gender,
   actions,
@@ -11,9 +13,20 @@ const NumWorkers = ({
 }) => {
   const label = `num${gender}`;
   const value = data[`num${gender}`];
+
+  const intl = useIntl();
+
+  const localizedGender = intl.formatMessage({
+    id: `gender.${gender.toLowerCase()}`,
+  });
   return (
     <div className="input-control">
-      <label htmlFor={label}># of {gender.toLocaleLowerCase()} employees</label>
+      <label htmlFor={label}>
+        <FormattedMessage
+          id="label.numGendered"
+          values={{ gender: localizedGender }}
+        />
+      </label>
       <input
         tabIndex={0}
         min={0}
@@ -118,7 +131,11 @@ export function WorkplaceInfo({
                   `}
             </>
           ) : (
-            "Minority gender does not apply with less than 5 candidates or when the minority proporition is so small that they receive 0 seats"
+            `Minority gender does not apply ${
+              worksCouncilSize < 5
+                ? "with less than 5 candidates"
+                : "when the minority proportion is so small that they aren't allocated any seats"
+            } `
           )}
         </div>
       </div>

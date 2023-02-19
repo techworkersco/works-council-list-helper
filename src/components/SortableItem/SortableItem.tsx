@@ -13,55 +13,18 @@ import styles from "./SortableItem.module.css";
 import { Edit } from "../Item/components";
 
 interface SortableItemProps {
-  containerId: UniqueIdentifier;
+  listId: UniqueIdentifier;
   member: ListMember;
   index: number;
   handle: boolean;
   disabled?: boolean;
   onRemove?: ItemProps["onRemove"];
   renderActions?: ItemProps["renderActions"];
-  style(args: any): React.CSSProperties;
   getIndex(id: UniqueIdentifier): number;
-  renderItem(): React.ReactElement;
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
   onChangeItem: (member: ListMember) => void;
-  status: { isPopularlyElected?: boolean, isOverflowElected?: boolean }
+  status: { isPopularlyElected?: boolean; isOverflowElected?: boolean };
 }
-
-// const buttonStyles = { display: "block" };
-
-// export function ItemForm({
-//   member,
-//   onChangeItem,
-// }: {
-//   member: ListMember;
-//   onChangeItem?: (member: ListMember) => void;
-// }) {
-//   const [changed, setChanged] = useState<string | undefined>();
-//   return (
-//     <>
-//       <div>
-//         {genderArray.map((gender) => (
-//           <Button
-//             style={
-//               (!changed && member.gender === gender) || changed === gender
-//                 ? { ...buttonStyles, backgroundColor: "whitesmoke", color: "black" }
-//                 : buttonStyles
-//             }
-//             aria-disabled={member.gender === gender}
-//             onClick={() => {
-//               setChanged(gender);
-//               onChangeItem && onChangeItem({ ...member, gender });
-//             }}
-//             key={member.id + gender}
-//           >
-//             {SingularGenders[gender]}
-//           </Button>
-//         ))}
-//       </div>
-//     </>
-//   );
-// }
 
 export function ItemContent({
   member,
@@ -128,15 +91,12 @@ export function SortableItem({
   disabled,
   index,
   handle,
-  renderItem,
-  style,
-  containerId,
-  getIndex,
+  listId,
   wrapperStyle,
   onRemove,
   onChangeItem,
   member,
-  status
+  status,
 }: SortableItemProps) {
   const [isEditing, setEditing] = useState(false);
   const {
@@ -145,8 +105,6 @@ export function SortableItem({
     listeners,
     isDragging,
     isSorting,
-    over,
-    overIndex,
     transform,
     transition,
   } = useSortable({
@@ -173,21 +131,12 @@ export function SortableItem({
       index={index}
       wrapperStyle={wrapperStyle({ index })}
       isEditing={isEditing}
-      style={style({
-        index,
-        value: member.id,
-        isDragging,
-        isSorting,
-        overIndex: over ? getIndex(over.id) : overIndex,
-        containerId,
-      })}
       onRemove={onRemove}
       color={getColor(status)}
       transition={transition}
       transform={transform}
       fadeIn={mountedWhileDragging}
       listeners={listeners}
-      renderItem={renderItem}
       renderActions={() => (
         <Edit
           aria-label="Edit list item"
