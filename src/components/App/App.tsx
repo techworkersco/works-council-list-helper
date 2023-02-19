@@ -132,7 +132,7 @@ export function App({ setLocale }: Props) {
       <h2>Workplace Info</h2>
       <WorkplaceInfo actions={actions} data={data} />
       <h2>
-        Candidate Lists{" "}
+        Candidate Lists&nbsp;
         <button
           aria-label="toggle horizontal list display"
           onClick={() => setListDisplay(ListDisplay.horizontal)}

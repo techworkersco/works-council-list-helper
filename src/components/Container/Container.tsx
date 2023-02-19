@@ -73,7 +73,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
       >
         {label ? (
           <div className={styles.Header}>
-            {label}
+            <div style={{ display: "flex", padding: 12 }}>{label}</div>
             <div className={styles.Actions}>
               {onToggleEdit ? <Edit aria-label="Edit list" onClick={onToggleEdit} isActive={isEditing} /> : undefined}
               {onRemove ? <Remove aria-label="Remove list" onClick={onRemove} /> : undefined}

@@ -80,7 +80,7 @@ export function DroppableContainer({
       <ListEditForm
         onChange={onRenameList}
         // @ts-expect-error
-        list={{ id, name: props.label, members: [], votes: 0 }}
+        list={{ id, name: label, members: [], votes: 0 }}
       />
     );
   }
