@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import reportWebVitals from "./reportWebVitals";
+import * as serviceWorkerRegistration from "./sw/serviceWorkerRegistration";
+import reportWebVitals from "./sw/reportWebVitals";
 import * as locales from './locales'
 import { IntlProvider } from "react-intl";
-import { AppRoot } from "./AppRoot";
+import { AppRoot } from "./components/AppRoot";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

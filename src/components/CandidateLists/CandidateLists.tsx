@@ -28,7 +28,7 @@ import {
   SortingStrategy,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { coordinateGetter as multipleContainersCoordinateGetter } from "../multipleContainerKeyboardCoordinates";
+import { coordinateGetter as multipleContainersCoordinateGetter } from "../../lib/multipleContainerKeyboardCoordinates";
 
 import { Item, Container, Button } from "..";
 
@@ -40,7 +40,7 @@ import { ListItem, ListMember, Items, GenderEnum, ListData } from "../../types";
 import useSessionStorageState from "use-session-storage-state";
 import { DroppableContainer } from "../DroppableContainer";
 import { CandidateList } from "./CandidateList";
-import { demoData } from "../../demoData";
+import { demoData } from "../../lib/demoData";
 
 const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
