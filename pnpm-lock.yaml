@@ -75,6 +75,8 @@ specifiers:
   react-intl: ^6.2.8
   react-refresh: ^0.11.0
   react-router-dom: ^6.8.0
+  recoil: ^0.7.6
+  recoil-sync: ^0.2.0
   resolve: ^1.20.0
   resolve-url-loader: ^4.0.0
   sass-loader: ^12.3.0
@@ -178,6 +180,8 @@ dependencies:
   react-hook-form: 7.43.0_react@18.2.0
   react-intl: 6.2.8_o77wnou4wwnegu5woljtklrzru
   react-refresh: 0.11.0
+  recoil: 0.7.6_biqbaboplfbrettd7655fr4n2y
+  recoil-sync: 0.2.0_recoil@0.7.6
   resolve: 1.22.1
   resolve-url-loader: 4.0.0
   sass-loader: 12.6.0_webpack@5.75.0
@@ -2571,6 +2575,10 @@ packages:
   /@prisma/engines/4.9.0:
     resolution: {integrity: sha512-t1pt0Gsp+HcgPJrHFc+d/ZSAaKKWar2G/iakrE07yeKPNavDP3iVKPpfXP22OTCHZUWf7OelwKJxQgKAm5hkgw==}
     requiresBuild: true
+    dev: false
+
+  /@recoiljs/refine/0.1.1:
+    resolution: {integrity: sha512-ry02rHswJePYkH1o8K99qL4O6TBntF9/g7W5wXVwaOUrIJEZUGfl/I3+btPXbUgyyEZvNs5xcwvOw13AufmFQw==}
     dev: false
 
   /@remix-run/router/1.3.1:
@@ -6302,6 +6310,10 @@ packages:
       duplexer: 0.1.2
     dev: false
 
+  /hamt_plus/1.0.2:
+    resolution: {integrity: sha512-t2JXKaehnMb9paaYA7J0BX8QQAY8lwfQ9Gjf4pg/mk4krt+cmwmU652HOoWonf+7+EQV97ARPMhhVgU1ra2GhA==}
+    dev: false
+
   /handle-thing/2.0.1:
     resolution: {integrity: sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==}
     dev: false
@@ -9674,6 +9686,33 @@ packages:
     engines: {node: '>= 12.13.0'}
     dev: false
 
+  /recoil-sync/0.2.0_recoil@0.7.6:
+    resolution: {integrity: sha512-ZYZM1C4LAhGr3EeMMI5MwT4eaEqsr+ddjB4EwdgN8HXXLmE7P5FVCdFHV3HJtMzxR3Y8sOmJDfN1IPrezwKoRg==}
+    peerDependencies:
+      recoil: '>=0.7.3'
+    dependencies:
+      '@recoiljs/refine': 0.1.1
+      recoil: 0.7.6_biqbaboplfbrettd7655fr4n2y
+      transit-js: 0.8.874
+    dev: false
+
+  /recoil/0.7.6_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-hsBEw7jFdpBCY/tu2GweiyaqHKxVj6EqF2/SfrglbKvJHhpN57SANWvPW+gE90i3Awi+A5gssOd3u+vWlT+g7g==}
+    peerDependencies:
+      react: '>=16.13.1'
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      hamt_plus: 1.0.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
   /recursive-readdir/2.2.3:
     resolution: {integrity: sha512-8HrF5ZsXk5FAH9dgsx3BlUer73nIhuj+9OrQwEbLTPOBzGkL1lsFCR01am+v+0m2Cmbs1nP12hLDl5FA7EszKA==}
     engines: {node: '>=6.0.0'}
@@ -10752,6 +10791,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       punycode: 2.3.0
+    dev: false
+
+  /transit-js/0.8.874:
+    resolution: {integrity: sha512-IDJJGKRzUbJHmN0P15HBBa05nbKor3r2MmG6aSt0UxXIlJZZKcddTk67/U7WyAeW9Hv/VYI02IqLzolsC4sbPA==}
+    engines: {node: '>= 0.10.0'}
     dev: false
 
   /tryer/1.0.1:

@@ -34,7 +34,7 @@
 
   &.placeholder {
     justify-content: center;
-    align-items: center;
+    align-lists: center;
     cursor: pointer;
     color: rgba(0, 0, 0, 0.5);
     background-color: transparent;
@@ -82,7 +82,7 @@
   display: flex;
   padding: 5px 20px;
   padding-right: 8px;
-  align-items: center;
+  align-lists: center;
   justify-content: space-between;
   background-color: #fff;
   border-top-left-radius: 5px;

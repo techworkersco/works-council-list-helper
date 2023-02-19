@@ -14,9 +14,11 @@ const NumWorkers = ({
   const label = `num${gender}`;
   const value = data[`num${gender}`];
 
-  const intl = useIntl()
+  const intl = useIntl();
 
-  const localizedGender = intl.formatMessage({ id: `gender.${gender.toLowerCase()}`}, )
+  const localizedGender = intl.formatMessage({
+    id: `gender.${gender.toLowerCase()}`,
+  });
   return (
     <div className="input-control">
       <label htmlFor={label}>
@@ -129,7 +131,11 @@ export function WorkplaceInfo({
                   `}
             </>
           ) : (
-            "Minority gender does not apply with less than 5 candidates or when the minority proporition is so small that they receive 0 seats"
+            `Minority gender does not apply ${
+              worksCouncilSize < 5
+                ? "with less than 5 candidates"
+                : "when the minority proportion is so small that they aren't allocated any seats"
+            } `
           )}
         </div>
       </div>

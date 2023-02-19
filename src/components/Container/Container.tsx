@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import classNames from "classnames";
 
-import { Handle, Remove } from "../Item";
+import { Remove } from "../Item";
 
 import styles from "./Container.module.css";
 import { Edit } from "../Item/components";
@@ -9,7 +9,7 @@ import { Edit } from "../Item/components";
 export interface Props {
   children: React.ReactNode;
   columns?: number;
-  label?: string;
+  label?: string | React.ReactElement;
   style?: React.CSSProperties;
   horizontal?: boolean;
   hover?: boolean;
@@ -77,7 +77,7 @@ export const Container = forwardRef<HTMLDivElement, Props>(
             <div className={styles.Actions}>
               {onToggleEdit ? <Edit aria-label="Edit list" onClick={onToggleEdit} isActive={isEditing} /> : undefined}
               {onRemove ? <Remove aria-label="Remove list" onClick={onRemove} /> : undefined}
-              <Handle aria-label="Move list" {...handleProps} />
+              {/* <Handle aria-label="Move list" {...handleProps} /> */}
             </div>
           </div>
         ) : null}

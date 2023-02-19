@@ -5,6 +5,7 @@ import styles from './Button.module.css';
 
 export interface Props extends HTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
+  disabled?: boolean
 }
 
 export function Button({children, ...props}: Props) {
