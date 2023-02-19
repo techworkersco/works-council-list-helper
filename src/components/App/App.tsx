@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { lazy, useState } from "react";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 import useSessionState from "use-session-storage-state";
 
@@ -11,8 +10,16 @@ import { sumValues } from "../../utilities/sumValues";
 import { pluck } from "../../utilities/pluck";
 import { WorkplaceInfo } from "../WorkplaceInfo";
 import { tallyAndValidateLists } from "../../lib/listData";
-import { CandidateLists } from "../CandidateLists";
+// import { CandidateLists } from "../CandidateLists";
 import "./App.css";
+
+const CandidateLists = lazy(() =>
+  import("../CandidateLists").then(({ CandidateLists }) => ({
+    default: CandidateLists,
+  }))
+);
+
+
 
 enum ListDisplay {
   vertical,
