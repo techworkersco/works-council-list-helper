@@ -95,21 +95,22 @@ export function WorkplaceInfo({
       <div className="input-control">
         <label htmlFor="totalWorkers">Total workers</label>
         <span className="cell" id="totalWorkers">
-          {" "}
           {totalWorkers}
         </span>
       </div>
       <div className="input-control">
         <label htmlFor="numSeats">Works Council Size</label>
         <span className="cell" id="numSeats">
-          {" "}
           {worksCouncilSize}
         </span>
       </div>
       {/* TODO: how does minority gender work with single member works councils? */}
 
       <div className="input-control">
-        <label htmlFor="workplaceGenderQuota">Dhondt Gender Quota</label>
+        <label htmlFor="workplaceGenderQuota">
+          <a href="https://en.wikipedia.org/wiki/D%27Hondt_method">D'Hondt</a>
+          &nbsp;Gender Quota
+        </label>
         <div
           className={
             !data.isGenderQuotaAchieved && isQuotaDisabled ? "error" : "cell"
@@ -133,7 +134,7 @@ export function WorkplaceInfo({
           ) : (
             `Minority gender does not apply ${
               worksCouncilSize < 5
-                ? "with less than 5 candidates"
+                ? "when the works council has less than 5 seats"
                 : "when the minority proportion is so small that they aren't allocated any seats"
             } `
           )}
