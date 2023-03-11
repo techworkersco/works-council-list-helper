@@ -134,8 +134,9 @@ export function App({ setLocale }: Props) {
           <button onClick={() => setLocale("ar")}>ar</button>
         </span>
       </h1>
-
-      <FormattedMessage id="workplaceInfo.header" />
+      <h2>
+        <FormattedMessage id="workplaceInfo.header" />
+      </h2>
       <WorkplaceInfo actions={actions} data={data} />
       <h2>
         Candidate Lists&nbsp;
