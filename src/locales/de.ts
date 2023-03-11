@@ -1,6 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
-export default {
-  title: "Betriebrat Wahlmodellierer",
+const de: Record<string, string> = {
+ title: "Betriebrat Wahlmodellierer",
   // using dot notated keys so we can seamlessly switch to a nested
   // object literal syntax if we want to, i.e.
   // { gender: { men: "Männer", women: "Frauen" } }
@@ -12,3 +12,5 @@ export default {
   "gender.nonbinary": "Diversen",
   "gender.nonbinary.singular": "Divers",
 };
+
+export default de

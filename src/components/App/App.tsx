@@ -27,7 +27,7 @@ enum ListDisplay {
 const screenWidth = window.outerWidth;
 
 type Props = {
-  setLocale: (locale: "en" | "de") => void;
+  setLocale: (locale: "en" | "de" | "ar") => void;
 };
 
 export function App({ setLocale }: Props) {
@@ -131,6 +131,7 @@ export function App({ setLocale }: Props) {
         <span>
           <button onClick={() => setLocale("en")}>en</button>
           <button onClick={() => setLocale("de")}>de</button>
+          <button onClick={() => setLocale("ar")}>ar</button>
         </span>
       </h1>
 
