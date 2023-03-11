@@ -1,7 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
 export default {
     title: "نموذج عمل انتخابات مجلس العمال",
-    "label.numGendered": "{gender} الموظفين)",
+    "workplaceInfo.header": "عدد ومعلومات مجالس العمال",
+    "label.numGendered": "{gender} الموظفين",
     "gender.men": "ذكور",
     "gender.men.singular": "ذكر",
     "gender.women": "اناث",

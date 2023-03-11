@@ -135,7 +135,7 @@ export function App({ setLocale }: Props) {
         </span>
       </h1>
 
-      <h2>Workplace Info</h2>
+      <FormattedMessage id="workplaceInfo.header" />
       <WorkplaceInfo actions={actions} data={data} />
       <h2>
         Candidate Lists&nbsp;

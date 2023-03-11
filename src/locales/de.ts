@@ -1,6 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 const de: Record<string, string> = {
  title: "Betriebrat Wahlmodellierer",
+ "workplaceInfo.header": "Betrieb Info",
   // using dot notated keys so we can seamlessly switch to a nested
   // object literal syntax if we want to, i.e.
   // { gender: { men: "Männer", women: "Frauen" } }
