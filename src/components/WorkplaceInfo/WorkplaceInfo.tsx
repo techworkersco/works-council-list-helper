@@ -66,7 +66,6 @@ export function WorkplaceInfo({
     suggestedSeats,
     totalVotes,
   } = data;
-  const intl = useIntl();
   const minorityGenderHasMembers = data[`num${minorityGender}`] > 0;
 
   const numMinorityWorkers = workplaceGenderQuota[minorityGender];
@@ -107,7 +106,7 @@ export function WorkplaceInfo({
       <div className="input-control">
         <label htmlFor="numSeats">
           <FormattedMessage
-            id="label.worksCouncilSeats"
+            id="label.worksCouncilSeatCount"
             defaultMessage={"Works Council Seats"}
           />
         </label>
