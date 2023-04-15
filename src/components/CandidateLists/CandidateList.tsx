@@ -69,6 +69,7 @@ export function CandidateList({
           const status = {
             isPopularlyElected: data?.popularlyElectedMembers.includes(index),
             isOverflowElected: data?.overflowElectedMembers.includes(index),
+            isGenderQuotaElected: data?.genderOverflowElectedMembers.includes(index)
           };
 
           return (
@@ -140,11 +141,11 @@ export function CandidateList({
                   list={list}
                 />
               )}
-              {data && data.listDistribution ? (
+              {data && data.popularListDistribution ? (
                 <>
                   <div className="input-control">
                     <label>Seat Distribution (raw)</label>
-                    <span className="cell">{data.listDistribution}</span>
+                    <span className="cell">{data.popularListDistribution}</span>
                   </div>
                   {minorityGender && (
                     <div className="input-control">

@@ -28,6 +28,7 @@ function ListEditForm({ list, onChange }: ListEditFormProps) {
         autoFocus
         defaultValue={list.name}
         onChange={(e) => onChange && onChange(e.target.value)}
+        style={{ maxWidth: 190 }}
       />
     </form>
   );
