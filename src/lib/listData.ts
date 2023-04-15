@@ -63,8 +63,6 @@ function tallyAndValidateList(
             minorityGenderElectedMembers.push(i);
             genderDistribution -= 1;
           }
-          
-          console.log({genderDistribution})
         }
       }
     
@@ -97,7 +95,7 @@ function tallyAndValidateList(
 
     if (!isGenderRatioValid) {
       const genderOverflow =
-        minorityProportion - popularListGenderTally[minorityGender];
+      minorityProportion - popularListGenderTally[minorityGender];
       console.log({ genderOverflow })
 
       popularlyElectedMembers.slice(0, -genderOverflow);

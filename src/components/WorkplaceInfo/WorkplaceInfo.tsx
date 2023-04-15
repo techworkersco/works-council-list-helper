@@ -121,59 +121,62 @@ export function WorkplaceInfo({
           <a href="https://en.wikipedia.org/wiki/D%27Hondt_method">D'Hondt</a>
           &nbsp;Gender Quota
         </label>
-        <div
-          className={
-            !data.isGenderQuotaAchieved && isQuotaDisabled ? "error" : "cell"
-          }
-          id="workplaceGenerQuota"
-        >
-          {isQuotaDisabled ? (
-            <>
-              {/* todo: replace with ICU pluralisation */}
-              {`There ${
-                data.isGenderQuotaAchieved
-                  ? numMinorityWorkers > 1
-                    ? "are"
-                    : "is"
-                  : "should be"
-              } at least ${numMinorityWorkers} works council member${
-                numMinorityWorkers > 1 ? "s" : ""
-              } for the minority gender (${minorityGender})
-                  `}
-            </>
-          ) : (
-            `Minority gender does not apply ${
-              worksCouncilSize < 5
-                ? "when the works council has less than 5 seats"
-                : "when the minority proportion is so small that they aren't allocated any seats"
-            } `
-          )}
-        </div>
       </div>
-
+      <div
+        className={
+          !data.isGenderQuotaAchieved && isQuotaDisabled ? "error" : "success"
+        }
+        id="workplaceGenerQuota"
+      >
+        {isQuotaDisabled ? (
+          <>
+            {/* todo: replace with ICU pluralisation */}
+            {`There ${
+              data.isGenderQuotaAchieved
+                ? numMinorityWorkers > 1
+                  ? "are"
+                  : "is"
+                : "should be"
+            } at least ${numMinorityWorkers} works council member${
+              numMinorityWorkers > 1 ? "s" : ""
+            } for the minority gender (${minorityGender})
+                  `}
+          </>
+        ) : (
+          `Minority gender does not apply ${
+            worksCouncilSize < 5
+              ? "when the works council has less than 5 seats"
+              : "when the minority proportion is so small that they aren't allocated any seats"
+          } `
+        )}
+      </div>
       <div className="input-control">
         <label htmlFor="totalVotes">Total Candidates</label>
         <span className="cell">{totalCandidates}</span>
-        {!notEnoughSeats && suggestMoreSeats && (
-          <div className="warning">
-            Note: For a more optimal and fair election, you should have at least{" "}
-            {suggestedSeats} candidates between available lists.
-          </div>
-        )}
-        <div className="error">
-          {notEnoughSeats &&
-            `Note: You don't have enough choices (${totalCandidates}) between the lists below to form the ${worksCouncilSize} person works council board`}
-        </div>
       </div>
+      {!notEnoughSeats && suggestMoreSeats && (
+        <div className="warning">
+          Note: For a more optimal and fair election, you should have at least{" "}
+          {suggestedSeats} candidates between available lists.
+        </div>
+      )}
+
+      {notEnoughSeats && (
+        <div className="error">
+          Note: You don't have enough choices (${totalCandidates}) between the
+          lists below to form the ${worksCouncilSize} person works council board
+        </div>
+      )}
+
       {!!totalWorkers && (
         <div className="input-control">
           <label htmlFor="totalVotes">Total Votes</label>
           <span className="cell">{totalVotes}</span>
-          {moreVotesThanWorkers && (
-            <div className="error">
-              You have more votes ({totalVotes}) than workers ({totalWorkers})
-            </div>
-          )}
+        </div>
+      )}
+      {moreVotesThanWorkers && (
+        <div className="error">
+          You have more votes ({totalVotes}) than workers ({totalWorkers})
         </div>
       )}
     </form>

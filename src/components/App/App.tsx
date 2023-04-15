@@ -134,47 +134,48 @@ export function App({ setLocale }: Props) {
           <button onClick={() => setLocale("ar")}>ar</button>
         </span>
       </h1>
-      <h2>
-        <FormattedMessage id="workplaceInfo.header" />
-      </h2>
-      <WorkplaceInfo actions={actions} data={data} />
-      <h2>
-        Candidate Lists&nbsp;
-        <button
-          aria-label="toggle horizontal list display"
-          onClick={() => setListDisplay(ListDisplay.horizontal)}
-          disabled={listDisplay === ListDisplay.horizontal}
-        >
-          horizontal
-        </button>
-        <button
-          aria-label="Toggle vertical list display"
-          onClick={() => setListDisplay(ListDisplay.vertical)}
-          disabled={listDisplay === ListDisplay.vertical}
-        >
-          vertical
-        </button>
-      </h2>
-      <CandidateLists
-        columns={1}
-        data={{ totalWorkers }}
-        handle
-        onChange={setLists}
-        minorityGender={minorityGender}
-        listData={listData}
-        onRemoveColumn={(columnId) => {
-          delete lists[columnId];
-        }}
-        vertical={listDisplay === ListDisplay.vertical}
-        wrapperStyle={() => ({
-          maxWidth: 360,
-        })}
-      />
-      {totalWorkers > 0 && (
-        <>
-          <div className="form"></div>
-        </>
-      )}
+      <div id="tray">
+        <div id="workplace-info">
+          <h2>
+            <FormattedMessage id="workplaceInfo.header" />
+          </h2>
+          <WorkplaceInfo actions={actions} data={data} />
+        </div>
+        <div id="candidate-lists">
+          <h2>
+            Candidate Lists&nbsp;
+            <button
+              aria-label="toggle horizontal list display"
+              onClick={() => setListDisplay(ListDisplay.horizontal)}
+              disabled={listDisplay === ListDisplay.horizontal}
+            >
+              horizontal
+            </button>
+            <button
+              aria-label="Toggle vertical list display"
+              onClick={() => setListDisplay(ListDisplay.vertical)}
+              disabled={listDisplay === ListDisplay.vertical}
+            >
+              vertical
+            </button>
+          </h2>
+          <CandidateLists
+            columns={1}
+            data={{ totalWorkers }}
+            handle
+            onChange={setLists}
+            minorityGender={minorityGender}
+            listData={listData}
+            onRemoveColumn={(columnId) => {
+              delete lists[columnId];
+            }}
+            vertical={listDisplay === ListDisplay.vertical}
+            wrapperStyle={() => ({
+              maxWidth: 360,
+            })}
+          />
+        </div>
+      </div>
     </div>
   );
 }

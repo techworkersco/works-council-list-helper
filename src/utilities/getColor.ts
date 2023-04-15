@@ -11,7 +11,7 @@ export function getColor({
     return "hsl(135, 98%, 45%)";
   }
   if(isGenderQuotaElected) {
-    return "hsl(170, 98%, 45%)"
+    return "hsl(190, 98%, 45%)"
   }
   if (isOverflowElected) {
     return "hsl(62, 98%, 45%)"
