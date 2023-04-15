@@ -12,6 +12,7 @@ import { WorkplaceInfo } from "../WorkplaceInfo";
 import { tallyAndValidateLists } from "../../lib/listData";
 
 import "./App.css";
+import { getColor } from "src/utilities/getColor";
 
 const CandidateLists = lazy(() =>
   import("../CandidateLists").then(({ CandidateLists }) => ({
@@ -145,7 +146,7 @@ export function App({ setLocale }: Props) {
           <header>
             <span
               style={{
-                display: 'inline-block',
+                display: "inline-block",
                 fontSize: "28.8px",
                 margin: "16px 0px",
                 padding: "4px 0px",
@@ -168,12 +169,32 @@ export function App({ setLocale }: Props) {
             >
               vertical
             </button>
-            <span>
-              <small>
-                Legend
-                <span className="legend-block">Popular</span>
-                <span className="legend-block"></span>
-              </small>
+            <span id="legend">
+              <label>Legend</label>
+              <span
+                  className="legend-block"
+                  style={{
+                    backgroundColor: getColor({ isPopularlyElected: true }),
+                  }}
+                />
+              <span className="legend-label">
+                
+                Popularly Elected{" "}
+              </span>
+              <span
+                className="legend-block"
+                style={{
+                  backgroundColor: getColor({ isOverflowElected: true }),
+                }}
+              />
+              <span className="legend-label">List Overflow</span>
+              <span
+                className="legend-block"
+                style={{
+                  backgroundColor: getColor({ isGenderQuotaElected: true }),
+                }}
+              />
+              <span className="legend-label">Gender Quota</span>
             </span>
           </header>
           <CandidateLists

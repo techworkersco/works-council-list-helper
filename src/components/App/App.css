@@ -133,3 +133,20 @@ form,
   }
   
 }
+
+#legend {
+  margin-left: 10px;
+  label {
+    margin-right: 12px;
+  }
+  .legend-label {
+    padding: 6px;
+    font-size: 1rem;
+  }
+  .legend-block {
+    vertical-align: middle;
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+  }
+}
