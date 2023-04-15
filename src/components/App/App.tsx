@@ -142,8 +142,18 @@ export function App({ setLocale }: Props) {
           <WorkplaceInfo actions={actions} data={data} />
         </div>
         <div id="candidate-lists">
-          <h2>
-            Candidate Lists&nbsp;
+          <header>
+            <span
+              style={{
+                display: 'inline-block',
+                fontSize: "28.8px",
+                margin: "16px 0px",
+                padding: "4px 0px",
+              }}
+            >
+              Candidate Lists&nbsp;
+            </span>
+
             <button
               aria-label="toggle horizontal list display"
               onClick={() => setListDisplay(ListDisplay.horizontal)}
@@ -158,7 +168,14 @@ export function App({ setLocale }: Props) {
             >
               vertical
             </button>
-          </h2>
+            <span>
+              <small>
+                Legend
+                <span className="legend-block">Popular</span>
+                <span className="legend-block"></span>
+              </small>
+            </span>
+          </header>
           <CandidateLists
             columns={1}
             data={{ totalWorkers }}

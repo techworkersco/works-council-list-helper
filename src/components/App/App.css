@@ -52,7 +52,6 @@ form,
 .input-control > label {
   text-align: right;
   font-weight: 400;
-  /* width: 220px; */
 }
 
 @media (max-width: 650px) {
@@ -114,20 +113,23 @@ form,
   }
 }
 
-#tray {
-  display: grid;
-  grid-gap: 6px;
-}
-
-#workplace-info, #candidate-lists {
-}
-
-#workplace-info {
-  max-width: 360px;
-}
-
-#candidate-lists {
-  justify-content: left;
-  overflow: scroll;
-  grid-column: 3 / 4;
+@media (min-width: 1024px) {
+  #tray {
+    display: grid;
+    grid-gap: 6px;
+  }
+  
+  #workplace-info, #candidate-lists {
+  }
+  
+  #workplace-info {
+    max-width: 360px;
+  }
+  
+  #candidate-lists {
+    justify-content: left;
+    overflow: scroll;
+    grid-column: 2;
+  }
+  
 }
