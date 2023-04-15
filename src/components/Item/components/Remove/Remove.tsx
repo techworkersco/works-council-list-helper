@@ -6,6 +6,7 @@ export function Remove(props: ActionProps) {
   return (
     <Action
       {...props}
+      tabIndex={0}
       active={{
         fill: 'rgba(255, 70, 70, 0.95)',
         background: 'rgba(255, 70, 70, 0.1)',

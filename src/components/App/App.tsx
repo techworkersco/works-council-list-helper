@@ -167,7 +167,7 @@ export function App({ setLocale }: Props) {
         }}
         vertical={listDisplay === ListDisplay.vertical}
         wrapperStyle={() => ({
-          maxWidth: 400,
+          maxWidth: 360,
         })}
       />
       {totalWorkers > 0 && (

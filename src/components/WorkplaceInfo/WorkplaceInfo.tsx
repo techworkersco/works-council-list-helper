@@ -66,6 +66,7 @@ export function WorkplaceInfo({
     suggestedSeats,
     totalVotes,
   } = data;
+  const intl = useIntl();
   const minorityGenderHasMembers = data[`num${minorityGender}`] > 0;
 
   const numMinorityWorkers = workplaceGenderQuota[minorityGender];
@@ -93,13 +94,23 @@ export function WorkplaceInfo({
         gender={GenderEnum.man}
       />
       <div className="input-control">
-        <label htmlFor="totalWorkers">Total workers</label>
+        <label htmlFor="totalWorkers">
+          <FormattedMessage
+            id="label.workerCount"
+            defaultMessage={"Worker Count"}
+          />
+        </label>
         <span className="cell" id="totalWorkers">
           {totalWorkers}
         </span>
       </div>
       <div className="input-control">
-        <label htmlFor="numSeats">Works Council Size</label>
+        <label htmlFor="numSeats">
+          <FormattedMessage
+            id="label.worksCouncilSeats"
+            defaultMessage={"Works Council Seats"}
+          />
+        </label>
         <span className="cell" id="numSeats">
           {worksCouncilSize}
         </span>
