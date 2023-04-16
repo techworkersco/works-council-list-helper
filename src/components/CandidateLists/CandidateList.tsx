@@ -1,15 +1,21 @@
 import { SortableContext } from "@dnd-kit/sortable";
 import classNames from "classnames";
-import { genderArray, GenderEnum, Items, ListDataItem, ListItem } from "../../types";
+import {
+  genderArray,
+  GenderEnum,
+  Items,
+  ListDataItem,
+  ListItem,
+} from "../../types";
 import { Container } from "../Container";
 import { SortableItem } from "../SortableItem/SortableItem";
 import { DroppableContainer } from "../DroppableContainer";
 
 import { UniqueIdentifier } from "@dnd-kit/core";
 
-import { SortingStrategy  } from "@dnd-kit/sortable";
+import { SortingStrategy } from "@dnd-kit/sortable";
 
-import styles from './CandidateList.module.css'
+import styles from "./CandidateList.module.css";
 import { ListVotesForm } from "./ListVotesForm";
 
 type CandidateListProps = {
@@ -24,12 +30,12 @@ type CandidateListProps = {
   totalWorkers: number;
   getMemberIndex: (id: UniqueIdentifier) => number;
   handleAddItem: (listId: UniqueIdentifier) => void;
-  handleRemoveColumn: (listId: UniqueIdentifier) => void
-  handleRemoveItem: (index: number, listId: UniqueIdentifier) => void
-  handleRenameList: (listId: UniqueIdentifier, name: string) => void
+  handleRemoveColumn: (listId: UniqueIdentifier) => void;
+  handleRemoveItem: (index: number, listId: UniqueIdentifier) => void;
+  handleRenameList: (listId: UniqueIdentifier, name: string) => void;
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
-  scrollable?: boolean,
-  columns?: number
+  scrollable?: boolean;
+  columns?: number;
 };
 
 export function CandidateList({
@@ -49,7 +55,7 @@ export function CandidateList({
   handleRemoveItem,
   handleRenameList,
   getMemberIndex,
-  wrapperStyle
+  wrapperStyle,
 }: CandidateListProps) {
   let data: ListDataItem | null = listData;
   return (
@@ -69,6 +75,8 @@ export function CandidateList({
           const status = {
             isPopularlyElected: data?.popularlyElectedMembers.includes(index),
             isOverflowElected: data?.overflowElectedMembers.includes(index),
+            isGenderQuotaElected:
+              data?.genderOverflowElectedMembers.includes(index),
           };
 
           return (
@@ -140,11 +148,11 @@ export function CandidateList({
                   list={list}
                 />
               )}
-              {data && data.listDistribution ? (
+              {data && data.popularListDistribution ? (
                 <>
                   <div className="input-control">
                     <label>Seat Distribution (raw)</label>
-                    <span className="cell">{data.listDistribution}</span>
+                    <span className="cell">{data.popularListDistribution}</span>
                   </div>
                   {minorityGender && (
                     <div className="input-control">

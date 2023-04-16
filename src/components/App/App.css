@@ -32,6 +32,12 @@ form,
   flex-direction: row;
 }
 
+#workplace-info .input-control > input  {
+  width: 90px;
+}
+#workplace-info .input-control {
+  justify-content: right;
+}
 .input-control > label,
 .input-control > input,
 .input-control > .error,
@@ -44,9 +50,8 @@ form,
 }
 
 .input-control > label {
-  /* text-align: right; */
+  text-align: right;
   font-weight: 400;
-  width: 220px;
 }
 
 @media (max-width: 650px) {
@@ -57,7 +62,7 @@ form,
 
   .input-control {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     & > label {
       width: 100%;
     }
@@ -69,17 +74,23 @@ form,
   }
 }
 
-form .input-control .error {
+.error, .warning, .success {
+  padding: 8px;
+  margin: 6px;
   font-size: 1rem;
-  font-style: oblique;
+}
+.error {
   color: red;
 }
 
-form .input-control .warning {
-  font-size: 1rem;
-  font-style: oblique;
+.warning {
   color: #8f6b11;
   background-color: lightyellow;
+}
+
+.success {
+  background-color: lightgreen;
+  color: darkgreen;
 }
 
 .App-logo {
@@ -99,5 +110,43 @@ form .input-control .warning {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 1024px) {
+  #tray {
+    display: grid;
+    grid-gap: 6px;
+  }
+  
+  #workplace-info, #candidate-lists {
+  }
+  
+  #workplace-info {
+    max-width: 360px;
+  }
+  
+  #candidate-lists {
+    justify-content: left;
+    overflow: scroll;
+    grid-column: 2;
+  }
+  
+}
+
+#legend {
+  margin-left: 10px;
+  label {
+    margin-right: 12px;
+  }
+  .legend-label {
+    padding: 6px;
+    font-size: 1rem;
+  }
+  .legend-block {
+    vertical-align: middle;
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
   }
 }

@@ -33,13 +33,15 @@ export type ListItem = {
 
 export type ListDataItem = {
   popularListGenderTally: Record<GenderEnum, number>;
-  listDistribution: number;
+  popularListDistribution: number;
   listGenderRatio: Tally | 0;
   isGenderRatioValid: boolean | null;
   popularlyElectedMembers: number[];
   overflowElectedMembers: number[];
+  genderOverflowElectedMembers: number[];
   minorityGenderElectedMembers: number[];
   overflowDistribution: number;
+  genderDistribution: number;
 };
 
 export type Tdata = {

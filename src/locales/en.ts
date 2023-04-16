@@ -1,12 +1,17 @@
 /* eslint-disable import/no-anonymous-default-export */
-export default {
+const en = {
     title: "Works Council Election Modeller",
     "workplaceInfo.header": "Workplace Info",
-    "label.numGendered": "# of {gender} employees",
+    "candidateLists.header": "Candidate Lists",
+    "label.numGendered": "# of {gender} Employees",
+    "label.workerCount": "Worker Count",
+    "label.worksCouncilSeatCount": "Works Council Seat Count",
     "gender.men": "Men",
     "gender.men.singular": "Man",
     "gender.women": "Women",
-    "gender.women.singular": "wWoman",
+    "gender.women.singular": "Woman",
     "gender.nonbinary": "Non-Binary",
     "gender.nonbinary.singular": "Non-Binary",
 }
+
+export default en

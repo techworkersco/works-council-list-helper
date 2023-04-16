@@ -1,12 +1,17 @@
 export function getColor({
   isPopularlyElected,
-  isOverflowElected
+  isOverflowElected,
+  isGenderQuotaElected,
 }: {
   isPopularlyElected?: boolean;
-  isOverflowElected?: boolean
+  isOverflowElected?: boolean;
+  isGenderQuotaElected?: boolean;
 }) {
   if (isPopularlyElected) {
     return "hsl(135, 98%, 45%)";
+  }
+  if(isGenderQuotaElected) {
+    return "hsl(190, 98%, 45%)"
   }
   if (isOverflowElected) {
     return "hsl(62, 98%, 45%)"

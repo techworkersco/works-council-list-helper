@@ -154,7 +154,7 @@ export const Item = React.memo(
               {(renderActions) &&
                 renderActions({ index, value, sorting, dragging })}
               {onRemove ? (
-                <Remove aria-label="Remove item" className={styles.Remove} onClick={onRemove} />
+                <Remove aria-label="Remove item" tabIndex={0} className={styles.Remove} onClick={onRemove} />
               ) : null}
               {handle ? <Handle aria-label="Move item" {...handleProps} {...listeners} /> : null}
             </div>
