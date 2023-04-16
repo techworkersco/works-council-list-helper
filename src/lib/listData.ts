@@ -47,16 +47,17 @@ function tallyAndValidateList(
       }
     } else {
       // a list must have at least one vote for re-distribution, or is there more nuance her?
-      if(list.votes > 0 ) {
-         // if there are overflow votes from other lists to distribute
-        if(overflowDistribution > 0) {
+      if (list.votes > 0) {
+        // if there are overflow votes from other lists to distribute
+        if (overflowDistribution > 0) {
           overflowElectedMembers.push(i);
           if (member.gender === minorityGender) {
             minorityGenderElectedMembers.push(i);
           }
-          overflowDistribution = overflowDistribution - 1;
+          overflowDistribution -= 1;
         }
         // or gender quota seats to distribute
+
         if (genderDistribution > 0) {
           if (member.gender === minorityGender) {
             genderOverflowElectedMembers.push(i);
@@ -65,7 +66,6 @@ function tallyAndValidateList(
           }
         }
       }
-    
     }
   });
 
@@ -92,21 +92,31 @@ function tallyAndValidateList(
       popularListGenderTally[minorityGender] >= minorityProportion
     );
 
+    if (
+      popularlyElectedMembers.length > 0 &&
+      listGenderRatio[minorityGender] > 0
+    ) {
+      console.log("pop", popularlyElectedMembers, listGenderRatio[minorityGender])
+    }
+ 
 
     if (!isGenderRatioValid) {
+          // if they already have members of the minority gender further down the list
+    // and popular votes, lets re-distribute the votes?
+    
       const genderOverflow =
-      minorityProportion - popularListGenderTally[minorityGender];
-      console.log({ genderOverflow })
+        minorityProportion - popularListGenderTally[minorityGender];
+      console.log({ genderOverflow });
 
       popularlyElectedMembers.slice(0, -genderOverflow);
-      popularlyElectedMembers.splice(popularlyElectedMembers.length - genderOverflow,
-        genderOverflow);
+      popularlyElectedMembers.splice(
+        popularlyElectedMembers.length - genderOverflow,
+        genderOverflow
+      );
       popularListDistribution -= genderOverflow;
 
       genderDistribution += genderOverflow;
-      console.log(genderDistribution);
     }
-
   }
 
   return {
@@ -119,7 +129,7 @@ function tallyAndValidateList(
     overflowElectedMembers,
     overflowDistribution,
     genderOverflowElectedMembers,
-    genderDistribution
+    genderDistribution,
   };
 }
 

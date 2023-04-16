@@ -57,7 +57,7 @@ export const Draggable = forwardRef<HTMLButtonElement, Props>(
         style={
           {
             ...style,
-            '--translate-x': `${transform?.x ?? 0}px`,
+            // '--translate-x': `${transform?.x ?? 0}px`,
             '--translate-y': `${transform?.y ?? 0}px`,
           } as React.CSSProperties
         }

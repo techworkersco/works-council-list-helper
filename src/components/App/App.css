@@ -62,7 +62,7 @@ form,
 
   .input-control {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     & > label {
       width: 100%;
     }

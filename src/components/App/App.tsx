@@ -13,6 +13,7 @@ import { tallyAndValidateLists } from "../../lib/listData";
 
 import "./App.css";
 import { getColor } from "src/utilities/getColor";
+import { ElectionResults } from "../Election/ElectionResults";
 
 const CandidateLists = lazy(() =>
   import("../CandidateLists").then(({ CandidateLists }) => ({
@@ -127,20 +128,28 @@ export function App({ setLocale }: Props) {
 
   return (
     <div className="App">
-      <h1>
-        <FormattedMessage id="title" />
-        <span>
-          <button onClick={() => setLocale("en")}>en</button>
-          <button onClick={() => setLocale("de")}>de</button>
-          <button onClick={() => setLocale("ar")}>ar</button>
-        </span>
-      </h1>
       <div id="tray">
         <div id="workplace-info">
+          <h1>
+            <FormattedMessage id="title" />
+          </h1>
+          <div>
+            <button onClick={() => setLocale("en")}>en</button>
+            <button onClick={() => setLocale("de")}>de</button>
+            <button onClick={() => setLocale("ar")}>ar</button>
+          </div>
           <h2>
             <FormattedMessage id="workplaceInfo.header" />
           </h2>
-          <WorkplaceInfo actions={actions} data={data} />
+          <WorkplaceInfo
+            actions={actions}
+            data={{
+              numMen: data.numMen,
+              numNonBinary: data.numNonBinary,
+              numWomen: data.numWomen,
+            }}
+          />
+          <ElectionResults data={data} />
         </div>
         <div id="candidate-lists">
           <header>
@@ -152,7 +161,7 @@ export function App({ setLocale }: Props) {
                 padding: "4px 0px",
               }}
             >
-              Candidate Lists&nbsp;
+            <FormattedMessage id="candidateLists.header" />
             </span>
 
             <button
@@ -170,17 +179,13 @@ export function App({ setLocale }: Props) {
               vertical
             </button>
             <span id="legend">
-              <label>Legend</label>
               <span
-                  className="legend-block"
-                  style={{
-                    backgroundColor: getColor({ isPopularlyElected: true }),
-                  }}
-                />
-              <span className="legend-label">
-                
-                Popularly Elected{" "}
-              </span>
+                className="legend-block"
+                style={{
+                  backgroundColor: getColor({ isPopularlyElected: true }),
+                }}
+              />
+              <span className="legend-label">Popularly Elected </span>
               <span
                 className="legend-block"
                 style={{

@@ -2,6 +2,7 @@
 const en = {
     title: "Works Council Election Modeller",
     "workplaceInfo.header": "Workplace Info",
+    "candidateLists.header": "Candidate Lists",
     "label.numGendered": "# of {gender} Employees",
     "label.workerCount": "Worker Count",
     "label.worksCouncilSeatCount": "Works Council Seat Count",

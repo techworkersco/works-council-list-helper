@@ -13,7 +13,7 @@ interface Props {
 
 export function Droppable({children, id, dragging}: Props) {
   const {isOver, setNodeRef} = useDroppable({
-    id,
+    id
   });
 
   return (
